@@ -253,9 +253,5 @@ while game_over:
     screen.fill((0, 0, 0))
     game_over_text = font.render("Game Over", True, (255, 255, 255))
     screen.blit(game_over_text, (400, 400))
+    screen.blit(score_text, (410, 450))
     pygame.display.flip()
-
-    pygame.time.wait(5000)
-    game_over = False
-
-pygame.quit()
