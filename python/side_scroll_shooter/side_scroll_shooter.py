@@ -70,6 +70,10 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 player = Player()
 
+enemies = pygame.sprite.Group()
+all_sprites = pygame.sprite.Group()
+all_sprites.add(player)
+
 running = True
 
 # Main game loop
@@ -85,6 +89,8 @@ while running:
     player.update(pressed_keys)
 
     screen.fill((0, 0, 0))
-    screen.blit(player.surf, player.rect)
+
+    for entity in all_sprites:
+        screen.blit(entity.surf, entity.rect)
 
     pygame.display.flip()
