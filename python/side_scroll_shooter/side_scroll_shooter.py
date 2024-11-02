@@ -175,7 +175,7 @@ while running:
 
     if pygame.sprite.spritecollideany(player, obstacles):
         player.kill()
-        player.lives -= 1
+        player_lives -= 1
         if player_lives > 0:
             pygame.time.wait(1000)
             player = Player()
