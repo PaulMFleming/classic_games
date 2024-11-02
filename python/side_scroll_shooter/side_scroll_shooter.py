@@ -122,7 +122,7 @@ while running:
     lasers.update()
 
     for laser in lasers:
-        enemy_hit = pygame.sprite.spritecollide(laser, enemies, True)
+        enemy_hit = pygame.sprite.spritecollideany(laser, enemies)
         if enemy_hit:
             enemy_hit.kill()
             laser.kill()
