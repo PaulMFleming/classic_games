@@ -121,6 +121,12 @@ while running:
     enemies.update()
     lasers.update()
 
+    for laser in lasers:
+        enemy_hit = pygame.sprite.spritecollide(laser, enemies, True)
+        if enemy_hit:
+            enemy_hit.kill()
+            laser.kill()
+
     screen.fill((0, 0, 0))
 
     for entity in all_sprites:
