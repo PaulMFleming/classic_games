@@ -191,3 +191,20 @@ while running:
 
     pygame.display.flip()
     clock.tick(30)
+
+# Game over loop
+game_over = True
+while game_over:
+    for event in pygame.event.get():
+        if event.type == QUIT or (event.type == KEYDOWN and event.key == K_q):
+            game_over = False
+
+    screen.fill((0, 0, 0))
+    game_over_text = font.render("Game Over", True, (255, 255, 255))
+    screen.blit(game_over_text, (400, 400))
+    pygame.display.flip()
+
+    pygame.time.wait(5000)
+    game_over = False
+
+pygame.quit()
