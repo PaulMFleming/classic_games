@@ -37,6 +37,15 @@ class Player(pygame.sprite.Sprite):
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(5, 0)
 
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.right > SCREEN_WIDTH:
+            self.rect.right = SCREEN_WIDTH
+        if self.rect.top <= 0:
+            self.rect.top = 0
+        if self.rect.bottom >= SCREEN_HEIGHT:
+            self.rect.bottom = SCREEN_HEIGHT
+
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -57,16 +66,6 @@ while running:
     player.update(pressed_keys)
 
     screen.fill((0, 0, 0))
-
-    surf = pygame.Surface((50, 50))
-    surf.fill((255, 255, 255))
-    rect = surf.get_rect()
-
-    surf_center = (
-        (SCREEN_WIDTH - surf.get_width()) / 2,
-        (SCREEN_HEIGHT - surf.get_height()) / 2,
-    )
-
-    screen.blit(player.surf, (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+    screen.blit(player.surf, player.rect)
 
     pygame.display.flip()
