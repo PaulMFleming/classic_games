@@ -56,6 +56,10 @@ class Player(pygame.sprite.Sprite):
         lasers.add(laser)
         all_sprites.add(laser)
 
+    def reset_position(self):
+        self.rect.centerx = SCREEN_WIDTH // 4
+        self.rect.centery = SCREEN_HEIGHT // 2
+
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
@@ -109,28 +113,32 @@ class Laser(pygame.sprite.Sprite):
 
 
 class Explosion(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, x, y):
         super(Explosion, self).__init__()
         self.images = []
         for i in range(9):
             img = pygame.image.load(f"images/simpleExplosion0{i}.png").convert()
+            img.set_colorkey((0, 0, 0))
             self.images.append(img)
         self.index = 0
-        self.image = self.images[self.index]
-        self.rect = self.image.get_rect()
+        self.surf = self.images[self.index]
+        self.rect = self.surf.get_rect()
         self.rect.center = (x, y)
         self.counter = 0
+        self.animation_complete = False
 
     def update(self):
-        explosion_speed = 4
-        self.counter += 1
-        if self.counter >= explosion_speed:
-            self.counter = 0
-            self.index += 1
-            if self.index >= len(self.images):
-                self.kill()
-            else:
-                self.image = self.images[self.index]
+        if not self.animation_complete:
+            explosion_speed = 2
+            self.counter += 1
+            if self.counter >= explosion_speed:
+                self.counter = 0
+                self.index += 1
+                if self.index >= len(self.images):
+                    self.kill()
+                else:
+                    self.surf = self.images[self.index]
+                    self.rect = self.surf.get_rect(center=self.rect.center)
 
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -146,6 +154,7 @@ enemies = pygame.sprite.Group()
 lasers = pygame.sprite.Group()
 meteors = pygame.sprite.Group()
 obstacles = pygame.sprite.Group()
+explosions = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
 
@@ -181,6 +190,8 @@ while running:
     enemies.update()
     lasers.update()
     meteors.update()
+    explosions.update()
+    # all_sprites.update()
 
     for laser in lasers:
         enemy_hit = pygame.sprite.spritecollideany(laser, enemies)
@@ -196,16 +207,30 @@ while running:
     screen.fill((0, 0, 0))
 
     for entity in all_sprites:
-        screen.blit(entity.surf, entity.rect)
+        if entity != player:
+            screen.blit(entity.surf, entity.rect)
+
+    screen.blit(player.surf, player.rect)
+
+    for explosion in explosions:
+        screen.blit(explosion.surf, explosion.rect)
 
     if pygame.sprite.spritecollideany(player, obstacles):
-        player.kill()
-        player_lives -= 1
         if player_lives > 0:
-            pygame.time.wait(1000)
-            player = Player()
-            all_sprites.add(player)
+            explosion = Explosion(player.rect.centerx, player.rect.centery)
+            explosions.add(explosion)
+            all_sprites.add(explosion)
+            player_lives -= 1
+            player.reset_position()
+
+            for obstacle in obstacles:
+                if obstacle.rect.left < SCREEN_WIDTH // 2:
+                    obstacle.kill()
+
         else:
+            explosion = Explosion(player.rect.centerx, player.rect.centery)
+            explosions.add(explosion)
+            all_sprites.add(explosion)
             running = False
 
     score_text = font.render(f"Score: {score}", True, (255, 255, 255))
