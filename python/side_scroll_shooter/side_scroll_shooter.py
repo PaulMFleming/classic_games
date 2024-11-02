@@ -43,6 +43,18 @@ while running:
         elif event.type == QUIT:
             running = False
 
+    pressed_keys = pygame.key.get_pressed()
+
+    def update(self, pressed_keys):
+        if pressed_keys[K_UP]:
+            self.rect.move_ip(0, -5)
+        if pressed_keys[K_DOWN]:
+            self.rect.move_ip(0, 5)
+        if pressed_keys[K_LEFT]:
+            self.rect.move_ip(-5, 0)
+        if pressed_keys[K_RIGHT]:
+            self.rect.move_ip(5, 0)
+
     screen.fill((0, 0, 0))
 
     surf = pygame.Surface((50, 50))
