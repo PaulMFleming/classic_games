@@ -137,3 +137,4 @@ while running:
         running = False
 
     pygame.display.flip()
+    clock.tick(30)
