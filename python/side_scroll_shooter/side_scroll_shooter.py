@@ -57,7 +57,8 @@ class Player(pygame.sprite.Sprite):
         all_sprites.add(laser)
 
     def reset_position(self):
-        self.rect.centerx = SCREEN_WIDTH // 4
+        pygame.time.wait(1000)
+        self.rect.centerx = 10
         self.rect.centery = SCREEN_HEIGHT // 2
 
 
