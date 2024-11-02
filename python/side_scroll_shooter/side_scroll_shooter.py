@@ -19,6 +19,11 @@ pygame.init()
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
 
+score = 0
+player_lives = 3
+
+font = pygame.font.Font(None, 36)
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -158,6 +163,7 @@ while running:
         if enemy_hit:
             enemy_hit.kill()
             laser.kill()
+            score += 1
 
         if meteor_hit:
             laser.kill()
@@ -169,7 +175,19 @@ while running:
 
     if pygame.sprite.spritecollideany(player, obstacles):
         player.kill()
-        running = False
+        player.lives -= 1
+        if player_lives > 0:
+            pygame.time.wait(1000)
+            player = Player()
+            all_sprites.add(player)
+        else:
+            running = False
+
+    score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+    screen.blit(score_text, (880, 40))
+
+    lives_text = font.render(f"Lives: {player_lives}", True, (255, 255, 255))
+    screen.blit(lives_text, (880, 10))
 
     pygame.display.flip()
     clock.tick(30)
