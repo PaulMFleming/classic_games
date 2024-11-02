@@ -73,11 +73,22 @@ class Enemy(pygame.sprite.Sprite):
             )
         )
         self.speed = random.randint(5, 20)
+        self.dying = False
+        self.flash_counter = 0
 
     def update(self):
-        self.rect.move_ip(-self.speed, 0)
-        if self.rect.right < 0:
-            self.kill()
+        if self.dying:
+            self.flash_counter += 1
+            if self.flash_counter % 10 < 5:
+                self.surf.set_alpha(0)
+            else:
+                self.surf.set_alpha(255)
+            if self.flash_counter >= 10:
+                self.kill()
+        else:
+            self.rect.move_ip(-self.speed, 0)
+            if self.rect.right < 0:
+                self.kill()
 
 
 class Meteor(pygame.sprite.Sprite):
@@ -196,7 +207,7 @@ while running:
         enemy_hit = pygame.sprite.spritecollideany(laser, enemies)
         meteor_hit = pygame.sprite.spritecollideany(laser, meteors)
         if enemy_hit:
-            enemy_hit.kill()
+            enemy_hit.dying = True
             laser.kill()
             score += 1
 
