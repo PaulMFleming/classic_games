@@ -108,6 +108,31 @@ class Laser(pygame.sprite.Sprite):
             self.kill()
 
 
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Explosion, self).__init__()
+        self.images = []
+        for i in range(9):
+            img = pygame.image.load(f"images/simpleExplosion0{i}.png").convert()
+            self.images.append(img)
+        self.index = 0
+        self.image = self.images[self.index]
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.counter = 0
+
+    def update(self):
+        explosion_speed = 4
+        self.counter += 1
+        if self.counter >= explosion_speed:
+            self.counter = 0
+            self.index += 1
+            if self.index >= len(self.images):
+                self.kill()
+            else:
+                self.image = self.images[self.index]
+
+
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 ADDENEMY = pygame.USEREVENT + 1
