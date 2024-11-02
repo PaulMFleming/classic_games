@@ -29,7 +29,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
         self.surf = pygame.image.load("images/ship.png").convert()
-        self.surf.set_colorkey((0, 0, 255))
+        self.surf.set_colorkey((0, 0, 0))
         self.rect = self.surf.get_rect()
 
     def update(self, pressed_keys):
@@ -66,7 +66,7 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super(Enemy, self).__init__()
         self.surf = pygame.image.load("images/enemy_A.png").convert()
-        self.surf.set_colorkey((0, 0, 255))
+        self.surf.set_colorkey((0, 0, 0))
         self.rect = self.surf.get_rect(
             center=(
                 random.randint(SCREEN_WIDTH + 20, SCREEN_WIDTH + 100),
@@ -85,7 +85,7 @@ class Meteor(pygame.sprite.Sprite):
     def __init__(self):
         super(Meteor, self).__init__()
         self.surf = pygame.image.load("images/meteor_detailedLarge.png").convert()
-        self.surf.set_colorkey((0, 0, 255))
+        self.surf.set_colorkey((0, 0, 0))
         self.rect = self.surf.get_rect(
             center=(
                 random.randint(SCREEN_WIDTH + 20, SCREEN_WIDTH + 100),
@@ -104,7 +104,7 @@ class Laser(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super(Laser, self).__init__()
         self.surf = pygame.image.load("images/laserBlue.png").convert()
-        self.surf.set_colorkey((0, 0, 255))
+        self.surf.set_colorkey((0, 0, 0))
         self.rect = self.surf.get_rect(center=(x + 40, y))
 
     def update(self):
