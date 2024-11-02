@@ -66,6 +66,19 @@ class Enemy(pygame.sprite.Sprite):
             self.kill()
 
 
+class Laser(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super(Laser, self).__init__()
+        self.surf = pygame.image.load("images/laserBlue.png").convert()
+        self.surf.set_colorkey((0, 0, 255))
+        self.rect = self.surf.get_rect(center=(x, y))
+
+    def update(self):
+        self.rect.move_ip(10, 0)
+        if self.rect.left > SCREEN_WIDTH:
+            self.kill()
+
+
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 ADDENEMY = pygame.USEREVENT + 1
@@ -74,8 +87,11 @@ pygame.time.set_timer(ADDENEMY, 250)
 player = Player()
 
 enemies = pygame.sprite.Group()
+lasers = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
+
+clock = pygame.time.Clock()
 
 running = True
 
