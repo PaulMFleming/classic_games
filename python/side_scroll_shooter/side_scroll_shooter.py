@@ -76,7 +76,7 @@ class Laser(pygame.sprite.Sprite):
         super(Laser, self).__init__()
         self.surf = pygame.image.load("images/laserBlue.png").convert()
         self.surf.set_colorkey((0, 0, 255))
-        self.rect = self.surf.get_rect(center=(x, y))
+        self.rect = self.surf.get_rect(center=(x + 40, y))
 
     def update(self):
         self.rect.move_ip(10, 0)
