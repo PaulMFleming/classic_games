@@ -102,4 +102,8 @@ while running:
     for entity in all_sprites:
         screen.blit(entity.surf, entity.rect)
 
+    if pygame.sprite.spritecollideany(player, enemies):
+        player.kill()
+        running = False
+
     pygame.display.flip()
