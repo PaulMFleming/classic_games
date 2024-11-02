@@ -29,7 +29,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
         self.surf = pygame.image.load("images/ship.png").convert()
-        self.surf.set_colorkey((0, 0, 0))
+        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect()
 
     def update(self, pressed_keys):
@@ -57,7 +57,6 @@ class Player(pygame.sprite.Sprite):
         all_sprites.add(laser)
 
     def reset_position(self):
-        pygame.time.wait(1000)
         self.rect.centerx = 10
         self.rect.centery = SCREEN_HEIGHT // 2
 
@@ -66,7 +65,7 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super(Enemy, self).__init__()
         self.surf = pygame.image.load("images/enemy_A.png").convert()
-        self.surf.set_colorkey((0, 0, 0))
+        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect(
             center=(
                 random.randint(SCREEN_WIDTH + 20, SCREEN_WIDTH + 100),
@@ -85,7 +84,7 @@ class Meteor(pygame.sprite.Sprite):
     def __init__(self):
         super(Meteor, self).__init__()
         self.surf = pygame.image.load("images/meteor_detailedLarge.png").convert()
-        self.surf.set_colorkey((0, 0, 0))
+        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect(
             center=(
                 random.randint(SCREEN_WIDTH + 20, SCREEN_WIDTH + 100),
@@ -104,7 +103,7 @@ class Laser(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super(Laser, self).__init__()
         self.surf = pygame.image.load("images/laserBlue.png").convert()
-        self.surf.set_colorkey((0, 0, 0))
+        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect(center=(x + 40, y))
 
     def update(self):
@@ -119,7 +118,7 @@ class Explosion(pygame.sprite.Sprite):
         self.images = []
         for i in range(9):
             img = pygame.image.load(f"images/simpleExplosion0{i}.png").convert()
-            img.set_colorkey((0, 0, 0))
+            img.set_colorkey((0, 0, 0), RLEACCEL)
             self.images.append(img)
         self.index = 0
         self.surf = self.images[self.index]
@@ -192,7 +191,6 @@ while running:
     lasers.update()
     meteors.update()
     explosions.update()
-    # all_sprites.update()
 
     for laser in lasers:
         enemy_hit = pygame.sprite.spritecollideany(laser, enemies)
