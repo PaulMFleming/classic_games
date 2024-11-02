@@ -46,6 +46,11 @@ class Player(pygame.sprite.Sprite):
         if self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
 
+    def shoot(self):
+        laser = Laser(self.rect.centerx, self.rect.centery)
+        lasers.add(laser)
+        all_sprites.add(laser)
+
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
@@ -101,6 +106,8 @@ while running:
         if event.type == KEYDOWN:
             if event.key == K_ESCAPE or event.key == K_q:
                 running = False
+            elif event.key == K_SPACE:
+                player.shoot()
         elif event.type == QUIT:
             running = False
 
@@ -112,6 +119,7 @@ while running:
     pressed_keys = pygame.key.get_pressed()
     player.update(pressed_keys)
     enemies.update()
+    lasers.update()
 
     screen.fill((0, 0, 0))
 
