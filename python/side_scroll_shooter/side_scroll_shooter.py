@@ -171,6 +171,26 @@ all_sprites.add(player)
 
 clock = pygame.time.Clock()
 
+menu = True
+
+while menu:
+    for event in pygame.event.get():
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE or event.key == K_q:
+                menu = False
+            elif event.key == K_SPACE:
+                menu = False
+        elif event.type == QUIT:
+            menu = False
+
+    screen.fill((0, 0, 0))
+    title_font = pygame.font.Font(None, 72)
+    title_text = title_font.render("Space Shooter", True, (255, 255, 255))
+    menu_text = font.render("Press SPACE to start", True, (255, 255, 255))
+    screen.blit(menu_text, (400, 400))
+    screen.blit(title_text, (350, 200))
+    pygame.display.flip()
+
 running = True
 
 # Main game loop
