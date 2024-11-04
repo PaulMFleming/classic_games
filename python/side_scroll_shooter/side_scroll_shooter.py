@@ -1,5 +1,7 @@
 import pygame
 import random
+import json
+import os
 
 from pygame.locals import (
     RLEACCEL,
@@ -21,6 +23,7 @@ SCREEN_HEIGHT = 800
 
 score = 0
 player_lives = 3
+high_score_file = "high_score.json"
 
 font = pygame.font.Font(None, 36)
 
@@ -171,6 +174,27 @@ all_sprites.add(player)
 
 clock = pygame.time.Clock()
 
+
+def read_high_score(file_path):
+    if os.path.exists(file_path):
+        try:
+            with open(file_path, "r") as file:
+                return json.load(file)["high_score"]
+        except (json.JSONDecodeError, KeyError):
+            return 0
+    return 0
+
+
+high_score = read_high_score(high_score_file)
+
+
+def write_high_score(file_path, score):
+    with open(file_path, "w") as file:
+        json.dump({"high_score": score}, file)
+
+
+# Menu loop
+
 menu = True
 
 while menu:
@@ -183,12 +207,17 @@ while menu:
         elif event.type == QUIT:
             menu = False
 
+    high_score = read_high_score(high_score_file)
+
     screen.fill((0, 0, 0))
     title_font = pygame.font.Font(None, 72)
     title_text = title_font.render("Space Shooter", True, (255, 255, 255))
     menu_text = font.render("Press SPACE to start", True, (255, 255, 255))
+    high_score_text = font.render(f"High Score: {high_score}", True, (255, 255, 255))
     screen.blit(menu_text, (400, 400))
     screen.blit(title_text, (350, 200))
+    screen.blit(high_score_text, (400, 300))
+
     pygame.display.flip()
 
 running = True
@@ -272,6 +301,11 @@ while running:
     pygame.display.flip()
     clock.tick(30)
 
+if score > high_score:
+    high_score = score
+    write_high_score(high_score_file, score)
+
+
 # Game over loop
 game_over = True
 while game_over:
@@ -281,6 +315,9 @@ while game_over:
 
     screen.fill((0, 0, 0))
     game_over_text = font.render("Game Over", True, (255, 255, 255))
+    high_score_text = font.render(f"High Score: {high_score}", True, (255, 255, 255))
+    score_text = font.render(f"Score: {score}", True, (255, 255, 255))
     screen.blit(game_over_text, (400, 400))
     screen.blit(score_text, (410, 450))
+    screen.blit(high_score_text, (400, 500))
     pygame.display.flip()
