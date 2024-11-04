@@ -310,14 +310,18 @@ if score > high_score:
 game_over = True
 while game_over:
     for event in pygame.event.get():
-        if event.type == QUIT or (event.type == KEYDOWN and event.key == K_q):
+        if event.type == QUIT or (
+            event.type == KEYDOWN and (event.key == K_q or event.key == K_ESCAPE)
+        ):
             game_over = False
 
     screen.fill((0, 0, 0))
-    game_over_text = font.render("Game Over", True, (255, 255, 255))
+    game_over_font = pygame.font.Font(None, 72)
+    game_over_text = game_over_font.render("Game Over", True, (255, 255, 255))
     high_score_text = font.render(f"High Score: {high_score}", True, (255, 255, 255))
-    score_text = font.render(f"Score: {score}", True, (255, 255, 255))
-    screen.blit(game_over_text, (400, 400))
-    screen.blit(score_text, (410, 450))
-    screen.blit(high_score_text, (400, 500))
+    score_text = font.render(f"Your Score: {score}", True, (255, 255, 255))
+    screen.blit(game_over_text, (350, 200))
+    screen.blit(high_score_text, (400, 400))
+    screen.blit(score_text, (400, 300))
+
     pygame.display.flip()
