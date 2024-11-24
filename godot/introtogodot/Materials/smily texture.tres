@@ -1,0 +1,14 @@
+[gd_resource type="StandardMaterial3D" load_steps=4 format=3 uid="uid://d0xlu6nf2jtmy"]
+
+[ext_resource type="Texture2D" uid="uid://mn0g7lreml8b" path="res://Static/Images/fe23301c09d2abcb876adccfe1aab0f031467f57.png" id="1_rehvc"]
+
+[sub_resource type="CurveTexture" id="CurveTexture_c4drn"]
+
+[sub_resource type="MeshTexture" id="MeshTexture_sboa4"]
+
+[resource]
+albedo_color = Color(0.729412, 1, 1, 1)
+albedo_texture = ExtResource("1_rehvc")
+albedo_texture_force_srgb = true
+normal_texture = SubResource("MeshTexture_sboa4")
+detail_mask = SubResource("CurveTexture_c4drn")

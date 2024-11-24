@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://b18rxx8i2gbpo"]
+
+[ext_resource type="Material" uid="uid://btjkavnnm1ior" path="res://Materials/shiny pink.tres" id="1_1aqqa"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_mita2"]
+
+[node name="Ball" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = ExtResource("1_1aqqa")
+mesh = SubResource("SphereMesh_mita2")
