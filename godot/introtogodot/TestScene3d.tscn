@@ -1,0 +1,45 @@
+[gd_scene load_steps=6 format=3 uid="uid://j5bxcvhbirss"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_03e60"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_ap4pw"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_v5ynw"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_smsqq"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_a7ack"]
+
+[node name="Node3D" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.367737, -0.315348, 1.0092)
+
+[node name="Cube" type="MeshInstance3D" parent="."]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -4.29761, 0.0791383, -3.34968)
+mesh = SubResource("BoxMesh_03e60")
+
+[node name="Snowman" type="Node3D" parent="."]
+
+[node name="snowman bottom" type="MeshInstance3D" parent="Snowman"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 8.21019, 0.625186, 0.780558)
+mesh = SubResource("SphereMesh_ap4pw")
+skeleton = NodePath("../..")
+
+[node name="snowman middle" type="MeshInstance3D" parent="Snowman"]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 8.18046, 2.00897, 0.827565)
+mesh = SubResource("SphereMesh_v5ynw")
+skeleton = NodePath("../..")
+
+[node name="snowman top" type="MeshInstance3D" parent="Snowman"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.19683, 3.10254, 0.864531)
+mesh = SubResource("SphereMesh_smsqq")
+skeleton = NodePath("../..")
+
+[node name="snowman left arm" type="MeshInstance3D" parent="Snowman"]
+transform = Transform3D(0.0306398, 0.990067, 0.017225, 0.0068528, 0.0660202, -0.24936, -0.248021, 0.124134, -0.00476189, 9.34048, 2.12932, 1.01745)
+mesh = SubResource("BoxMesh_a7ack")
+skeleton = NodePath("../..")
+
+[node name="snowman right arm" type="MeshInstance3D" parent="Snowman"]
+transform = Transform3D(-0.0279645, -0.993508, -0.0051767, -0.00768423, -0.0173685, 0.249844, -0.248312, 0.112425, -0.00714864, 7.06203, 2.0776, 0.806294)
+mesh = SubResource("BoxMesh_a7ack")
+skeleton = NodePath("../..")
