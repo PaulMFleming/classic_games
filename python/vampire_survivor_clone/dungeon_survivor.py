@@ -44,7 +44,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.bg_tile = pygame.image.load("images/background.png")
-        self.tile_size = 1000
+        self.tile_size = 250
 
         self.player = Player(400, 300)
 
@@ -54,6 +54,10 @@ class Game:
             for event in pygame.event.get():
                 if event.type == QUIT:
                     running = False
+
+            for x in range(0, SCREEN_WIDTH, self.tile_size):
+                for y in range(0, SCREEN_HEIGHT, self.tile_size):
+                    self.screen.blit(self.bg_tile, (x, y))
 
             pressed_keys = pygame.key.get_pressed()
             self.player.update(pressed_keys)
