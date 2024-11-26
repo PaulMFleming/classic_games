@@ -77,7 +77,7 @@ class Game:
         self.bg_tile = pygame.image.load("images/background.png")
         self.tile_size = self.bg_tile.get_width()
 
-        self.player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        self.player = Player(MAP_WIDTH // 2, MAP_HEIGHT // 2)
         self.camera = Camera(MAP_WIDTH, MAP_HEIGHT)
 
     def run(self):
