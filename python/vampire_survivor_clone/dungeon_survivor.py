@@ -49,6 +49,35 @@ class Player(pygame.sprite.Sprite):
         self.rect.clamp_ip(pygame.Rect(0, 0, MAP_WIDTH, MAP_HEIGHT))
 
 
+class Zombie(pygame.sprite.Sprite):
+    def __init__(self, x, y, player):
+        super(Zombie, self).__init__()
+        self.surf = pygame.image.load("images/zombie.png")
+        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
+        self.rect = self.surf.get_rect(center=(x, y))
+        self.direction = "right"
+        self.speed = random.randint(1, 3)
+        self.player = player
+
+    def update(self):
+        # Move the zombie toward the player
+        if self.rect.x < self.player.rect.x:
+            self.rect.move_ip(self.speed, 0)
+        if self.rect.x > self.player.rect.x:
+            self.rect.move_ip(-self.speed, 0)
+        if self.rect.y < self.player.rect.y:
+            self.rect.move_ip(0, self.speed)
+        if self.rect.y > self.player.rect.y:
+            self.rect.move_ip(0, -self.speed)
+
+    @staticmethod
+    def spawn_zombie(player):
+        zombie = Zombie(
+            random.randint(0, MAP_WIDTH), random.randint(0, MAP_HEIGHT), player
+        )
+        return zombie
+
+
 class Camera:
     def __init__(self, width, height):
         # camera is a rectangle that represents the portion of the game world that the player can see
@@ -87,6 +116,11 @@ class Game:
         self.player = Player(MAP_WIDTH // 2, MAP_HEIGHT // 2)
         self.camera = Camera(MAP_WIDTH, MAP_HEIGHT)
 
+        self.zombies = pygame.sprite.Group()
+        for _ in range(10):
+            zombie = Zombie.spawn_zombie(self.player)
+            self.zombies.add(zombie)
+
     def run(self):
         running = True
         while running:
@@ -100,6 +134,8 @@ class Game:
             self.player.update(pressed_keys)
             self.camera.update(self.player)
 
+            self.zombies.update()
+
             # Tile the background
             for x in range(0, MAP_WIDTH, self.tile_size):
                 for y in range(0, MAP_HEIGHT, self.tile_size):
@@ -111,6 +147,8 @@ class Game:
                     )
 
             self.screen.blit(self.player.surf, self.camera.apply(self.player))
+            for zombie in self.zombies:
+                self.screen.blit(zombie.surf, self.camera.apply(zombie))
 
             pygame.display.flip()
             self.clock.tick(60)
