@@ -1,15 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://ccqpgb1gwfo52"]
+[gd_scene load_steps=5 format=3 uid="uid://ccqpgb1gwfo52"]
 
 [ext_resource type="Script" path="res://Player.gd" id="1_vx5s4"]
 [ext_resource type="Texture2D" uid="uid://d1ma7j6r20bdb" path="res://Sprites/Player.png" id="2_du3ig"]
-[ext_resource type="Texture2D" uid="uid://jg8libkvhjf6" path="res://Sprites/Coin.png" id="3_77kk6"]
-[ext_resource type="Script" path="res://Coin.gd" id="3_w1nd2"]
+[ext_resource type="PackedScene" uid="uid://b1fmwbn6cxjae" path="res://Coin.tscn" id="3_owcwa"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_d315p"]
 size = Vector2(50, 61)
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_hsxm0"]
-radius = 12.0
 
 [node name="Node2D" type="Node2D"]
 
@@ -26,16 +22,28 @@ texture = ExtResource("2_du3ig")
 position = Vector2(0, 14.5)
 shape = SubResource("RectangleShape2D_d315p")
 
-[node name="Coin" type="Area2D" parent="."]
-position = Vector2(-26, -1)
-script = ExtResource("3_w1nd2")
+[node name="Coin" parent="." instance=ExtResource("3_owcwa")]
 
-[node name="Sprite" type="Sprite2D" parent="Coin"]
-position = Vector2(-142, 1)
-texture = ExtResource("3_77kk6")
+[node name="Coin2" parent="." instance=ExtResource("3_owcwa")]
+position = Vector2(437, 144)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Coin"]
-position = Vector2(-142, 2)
-shape = SubResource("CircleShape2D_hsxm0")
+[node name="Coin3" parent="." instance=ExtResource("3_owcwa")]
+position = Vector2(287, -124)
 
-[connection signal="body_entered" from="Coin" to="Coin" method="_on_body_entered"]
+[node name="Coin4" parent="." instance=ExtResource("3_owcwa")]
+position = Vector2(-298, -167)
+
+[node name="Coin5" parent="." instance=ExtResource("3_owcwa")]
+position = Vector2(-247, 158)
+
+[node name="Coin6" parent="." instance=ExtResource("3_owcwa")]
+position = Vector2(457, -224)
+
+[node name="Coin7" parent="." instance=ExtResource("3_owcwa")]
+position = Vector2(-292, 26)
+
+[node name="Coin8" parent="." instance=ExtResource("3_owcwa")]
+position = Vector2(-54, 254)
+
+[node name="Coin9" parent="." instance=ExtResource("3_owcwa")]
+position = Vector2(590, 124)
