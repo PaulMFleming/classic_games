@@ -52,7 +52,7 @@ class Player(pygame.sprite.Sprite):
 class Zombie(pygame.sprite.Sprite):
     def __init__(self, x, y, player):
         super(Zombie, self).__init__()
-        self.surf = pygame.image.load("images/zombie.png")
+        self.surf = pygame.image.load("images/Zombie.png")
         self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect(center=(x, y))
         self.direction = "right"
