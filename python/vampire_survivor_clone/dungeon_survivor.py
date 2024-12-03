@@ -28,6 +28,7 @@ class Player(pygame.sprite.Sprite):
         self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect(center=(x, y))
         self.direction = "right"
+        self.health = 100
 
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
@@ -47,6 +48,11 @@ class Player(pygame.sprite.Sprite):
 
         # Keep player on the screen
         self.rect.clamp_ip(pygame.Rect(0, 0, MAP_WIDTH, MAP_HEIGHT))
+
+    def take_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.kill()
 
 
 class Zombie(pygame.sprite.Sprite):
