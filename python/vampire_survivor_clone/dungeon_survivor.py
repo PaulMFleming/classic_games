@@ -64,6 +64,7 @@ class Zombie(pygame.sprite.Sprite):
         self.direction = "right"
         self.speed = random.randint(1, 3)
         self.player = player
+        self.health = 10
 
     def update(self):
         # Move the zombie toward the player
@@ -75,6 +76,11 @@ class Zombie(pygame.sprite.Sprite):
             self.rect.move_ip(0, self.speed)
         if self.rect.y > self.player.rect.y:
             self.rect.move_ip(0, -self.speed)
+
+    def take_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            self.kill()
 
     @staticmethod
     def spawn_zombie(player):
