@@ -44,6 +44,11 @@ class Player(pygame.sprite.Sprite):
         self.fireball_damage = 10  # Changed base damage to 10
         self.base_shot_delay = 1500
         self.shot_delay = self.base_shot_delay
+        self.xp = 0
+        self.level = 1
+        self.xp_to_level = 50
+        self.base_fireball_damage = 10
+        self.fireball_damage = self.base_fireball_damage
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -120,6 +125,17 @@ class Player(pygame.sprite.Sprite):
         # Pass the facing direction to the ShockWave
         shockwave = ShockWave(self.rect.centerx, self.rect.centery, self.facing)
         return shockwave, shockwave.damage
+
+    def add_xp(self, amount):
+        self.xp += amount
+        if self.xp >= self.xp_to_level:
+            self.level_up()
+            
+    def level_up(self):
+        self.level += 1
+        self.xp = 0  # Reset XP
+        self.fireball_damage = self.base_fireball_damage + (self.level - 1) * 5
+        print(f"Level Up! Level {self.level} - Fireball damage increased to {self.fireball_damage}")
 
 
 #############################################
