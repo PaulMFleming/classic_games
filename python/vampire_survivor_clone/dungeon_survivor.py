@@ -38,7 +38,7 @@ class Player(pygame.sprite.Sprite):
         self.last_shot = pygame.time.get_ticks()
         self.shot_delay = 1500
         self.score = 0
-        self.shockwave_interva3000
+        self.shockwave_interval = 3000
         self.last_shockwave = 0
 
     def input(self):
