@@ -221,9 +221,39 @@ class Game:
         self.zombies = pygame.sprite.Group()
         self.fireballs = pygame.sprite.Group()
 
+        # Add spawn control variables
+        self.zombie_spawn_delay = 2000  # Start with 2 seconds between spawns
+        self.last_spawn = pygame.time.get_ticks()
+        self.min_spawn_delay = 500  # Fastest spawn rate (milliseconds)
+        self.difficulty_increase_rate = 50  # How much to decrease delay
+        self.max_zombies = 100  # Maximum zombies allowed at once
+
         for _ in range(10):
             zombie = Zombie.spawn_zombie(self.player)
             self.zombies.add(zombie)
+
+    def spawn_zombie(self):
+        # Don't spawn if at max zombies
+        if len(self.zombies) >= self.max_zombies:
+            return
+
+        # Spawn from random edge of the map
+        side = random.randint(0, 3)
+        if side == 0:  # Top
+            x = random.randint(0, MAP_WIDTH)
+            y = 0
+        elif side == 1:  # Right
+            x = MAP_WIDTH
+            y = random.randint(0, MAP_HEIGHT)
+        elif side == 2:  # Bottom
+            x = random.randint(0, MAP_WIDTH)
+            y = MAP_HEIGHT
+        else:  # Left
+            x = 0
+            y = random.randint(0, MAP_HEIGHT)
+
+        zombie = Zombie(x, y, self.player)
+        self.zombies.add(zombie)
 
     def run(self):
         running = True
@@ -303,6 +333,15 @@ class Game:
                         zombie_collision.rect.y -= knockback_distance
                     else:
                         zombie_collision.rect.y += knockback_distance
+
+            # Handle zombie spawning
+            current_time = pygame.time.get_ticks()
+            if current_time - self.last_spawn >= self.zombie_spawn_delay:
+                self.spawn_zombie()
+                self.last_spawn = current_time
+                # Increase difficulty (decrease spawn delay)
+                if self.zombie_spawn_delay > self.min_spawn_delay:
+                    self.zombie_spawn_delay -= self.difficulty_increase_rate
 
             pygame.display.flip()
             self.clock.tick(60)
