@@ -81,8 +81,13 @@ class Zombie(pygame.sprite.Sprite):
         self.speed = random.randint(1, 3)
         self.player = player
         self.health = 10
+        self.knockback_distance = 100
+        self.last_collision = 0
+        self.collision_cooldown = 500  # Milliseconds between collisions
 
     def update(self):
+        old_pos = self.rect.copy()
+        
         # Move the zombie toward the player
         if self.rect.x < self.player.rect.x:
             self.rect.move_ip(self.speed, 0)
@@ -92,6 +97,28 @@ class Zombie(pygame.sprite.Sprite):
             self.rect.move_ip(0, self.speed)
         if self.rect.y > self.player.rect.y:
             self.rect.move_ip(0, -self.speed)
+
+        # Check collision with player
+        current_time = pygame.time.get_ticks()
+        if (current_time - self.last_collision >= self.collision_cooldown and 
+            self.rect.colliderect(self.player.rect)):
+            self.last_collision = current_time
+            
+            # Calculate knockback direction
+            dx = self.rect.centerx - self.player.rect.centerx
+            dy = self.rect.centery - self.player.rect.centery
+            
+            # Normalize the direction and apply knockback
+            length = max(1, (dx**2 + dy**2)**0.5)  # Avoid division by zero
+            dx = (dx / length) * self.knockback_distance
+            dy = (dy / length) * self.knockback_distance
+            
+            self.rect.x += dx
+            self.rect.y += dy
+            
+            # Apply damage
+            self.player.take_damage(1)
+            self.take_damage(2)
 
     def take_damage(self, damage):
         self.health -= damage
@@ -236,7 +263,8 @@ class Game:
 
             # Draw debug info
             debug_text = self.debug_font.render(
-                f"Fireballs: {len(self.fireballs)}", True, (255, 255, 255)
+                f"Fireballs: {len(self.fireballs)} | Health: {self.player.health}", 
+                True, (255, 255, 255)
             )
             self.screen.blit(debug_text, (10, 10))
 
