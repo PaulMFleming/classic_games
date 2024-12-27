@@ -232,18 +232,15 @@ class Zombie(pygame.sprite.Sprite):
         self.rect.clamp_ip(pygame.Rect(0, 0, MAP_WIDTH, MAP_HEIGHT))
 
     def take_damage(self, damage):
-        # Don't apply damage if already dying
-        if self.is_dying:
-            return
-            
         self.health -= damage
-        print(f"Zombie took {damage} damage. Health now: {self.health}")  # Better debug message
-        
-        if self.health <= 0:
-            self.health = 0  # Prevent negative health
+        if self.health <= 0 and not self.is_dying:
             self.is_dying = True
             self.death_start_time = pygame.time.get_ticks()
-            self.player.score += 1  # Increment score when zombie dies
+            self.player.score += 1
+            # Add XP and create floating text
+            self.player.add_xp(5)
+            xp_text = XPText(self.rect.centerx, self.rect.top, 5)
+            Game.instance.xp_texts.add(xp_text)
 
     def start_bounce_animation(self):
         if not self.is_scaling:
@@ -378,8 +375,6 @@ class Game:
         for _ in range(10):
             zombie = Zombie.spawn_zombie(self.player)
             self.zombies.add(zombie)
-
-        self.xp_texts = pygame.sprite.Group()
 
     def spawn_zombie(self):
         # Don't spawn if at max zombies
@@ -608,11 +603,6 @@ class Game:
                 self.player.shot_delay = max(300, self.player.shot_delay - 300)  # Decrease delay by 300ms, min 300ms
                 print(f"Power-up collected! Shot delay decreased to {self.player.shot_delay}ms")  # Debug message
                 power_up_collision.kill()
-
-            # Update and draw XP texts
-            self.xp_texts.update()
-            for xp_text in self.xp_texts:
-                self.screen.blit(xp_text.surf, self.camera.apply(xp_text))
 
             pygame.display.flip()
             self.clock.tick(60)
