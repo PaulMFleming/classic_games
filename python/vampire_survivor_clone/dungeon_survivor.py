@@ -158,7 +158,7 @@ class Zombie(pygame.sprite.Sprite):
             elif progress <= 1:  # Last quarter - return to normal
                 self.current_scale = 0.9 + (0.1 * ((progress - 0.75) * 4))
             else:  # Animation complete
-                self.current_scale = 1.0
+                self.current_scale = 0.95
                 self.is_scaling = False
             
             # Apply scale
