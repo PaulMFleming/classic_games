@@ -36,6 +36,7 @@ class Player(pygame.sprite.Sprite):
         self.health = 100
         self.last_shot = pygame.time.get_ticks()
         self.shot_delay = 1500
+        self.score = 0
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -136,6 +137,8 @@ class Zombie(pygame.sprite.Sprite):
         self.health -= damage
         if self.health <= 0:
             self.kill()
+            self.player.score += 1
+            print(f"Zombie killed! Score: {self.player.score}")
 
     def attack(self):
         return ZombieAttack(self.rect.x, self.rect.y, self.direction)
@@ -299,7 +302,7 @@ class Game:
 
             # Draw health and score
             debug_text = self.debug_font.render(
-                f"Score: {self.score} | Health: {self.player.health}", 
+                f"Score: {self.player.score} | Health: {self.player.health}", 
                 True, (255, 255, 255)
             )
             self.screen.blit(debug_text, (10, 10))
