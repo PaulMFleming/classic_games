@@ -29,30 +29,61 @@ class Player(pygame.sprite.Sprite):
         self.surf = pygame.image.load("images/wizard_survivor_small.png")
         self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect(center=(x, y))
-        self.direction = "right"
+        self.direction = pygame.math.Vector2(0, 0)
+        self.speed = 5
+        self.diagonal_speed = 0.707
         self.health = 100
         self.last_shot = pygame.time.get_ticks()
         self.shot_delay = 3000
+        self.facing = "right"
 
-    def update(self, pressed_keys):
-        if pressed_keys[K_UP]:
-            self.rect.move_ip(0, -5)
-        if pressed_keys[K_DOWN]:
-            self.rect.move_ip(0, 5)
-        if pressed_keys[K_LEFT]:
-            self.rect.move_ip(-5, 0)
-            if self.direction != "left":
-                self.direction = "left"
-                self.surf = pygame.transform.flip(self.surf, True, False)
-        if pressed_keys[K_RIGHT]:
-            self.rect.move_ip(5, 0)
-            if self.direction != "right":
-                self.direction = "right"
-                self.surf = pygame.transform.flip(self.surf, True, False)
+    def input(self):
+        keys = pygame.key.get_pressed()
 
+        dx = 0
+        dy = 0
+
+        if keys[K_UP]:
+            dy -= 1
+        if keys[K_DOWN]:
+            dy += 1
+        if keys[K_LEFT]:
+            dx -= 1
+        if keys[K_RIGHT]:
+            dx += 1
+        return dx, dy
+
+        # Normalize diagonal movement
+        if dx != 0 and dy != 0:
+            dx *= self.diagonal_speed
+            dy *= self.diagonal_speed
+
+        # Apply speed
+        self.direction.x = dx * self.speed
+        self.direction.y = dy * self.speed
+
+
+    def update(self):
+        self.input()  # Get input first
+        
+        # Apply movement
+        self.rect.x += self.direction.x
+        self.rect.y += self.direction.y
+        
+        # Handle sprite flipping for direction
+        if self.direction.x < 0:  # Moving left
+            if self.facing != "left":
+                self.facing = "left"
+                self.surf = pygame.transform.flip(self.surf, True, False)
+        elif self.direction.x > 0:  # Moving right
+            if self.facing != "right":
+                self.facing = "right"
+                self.surf = pygame.transform.flip(self.surf, True, False)
+        
         # Keep player on the screen
         self.rect.clamp_ip(pygame.Rect(0, 0, MAP_WIDTH, MAP_HEIGHT))
-
+        
+        # Handle shooting
         current_time = pygame.time.get_ticks()
         if current_time - self.last_shot >= self.shot_delay:
             self.last_shot = current_time
@@ -287,3 +318,4 @@ class Game:
 if __name__ == "__main__":
     game = Game()
     game.run()
+
