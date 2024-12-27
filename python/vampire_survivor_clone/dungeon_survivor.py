@@ -258,14 +258,14 @@ class Zombie(pygame.sprite.Sprite):
 #############################################
 ## Weapons ##
 class Fireball(pygame.sprite.Sprite):
-    def __init__(self, x, y, direction):
+    def __init__(self, x, y, direction, damage=3):  # Default damage of 3
         super(Fireball, self).__init__()
         self.surf = pygame.image.load("images/fireball.png")
         self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect(center=(x, y))
         self.direction = direction
-        self.speed = 30
-        self.damage = 10
+        self.speed = 7
+        self.damage = damage
 
     def update(self):
         # Move in the fixed direction
@@ -572,9 +572,9 @@ class ShockWave(pygame.sprite.Sprite):
         super(ShockWave, self).__init__()
         self.center_x = x
         self.center_y = y
-        self.radius = 10
-        self.max_radius = 150
-        self.growth_speed = 12
+        self.radius = 20
+        self.max_radius = 300
+        self.growth_speed = 15
         self.damage = 1
         
         # Arc parameters
@@ -582,10 +582,11 @@ class ShockWave(pygame.sprite.Sprite):
         
         # Set start_angle based on player facing direction
         if player_facing == "right":
-            self.start_angle = -60  # Centers the 120-degree arc to the right (-60 to +60)
+            self.start_angle = -60
         else:  # facing left
-            self.start_angle = 120  # Centers the 120-degree arc to the left (120 to 240)
+            self.start_angle = 120
         
+        # Make surface bigger to accommodate larger radius
         self.surf = pygame.Surface((self.max_radius * 2, self.max_radius * 2), pygame.SRCALPHA)
         self.rect = self.surf.get_rect(center=(x, y))
 
