@@ -29,56 +29,53 @@ class Player(pygame.sprite.Sprite):
         self.surf = pygame.image.load("images/wizard_survivor_small.png")
         self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect(center=(x, y))
-        self.direction = pygame.math.Vector2(0, 0)
+        self.facing = "right"
+        self.direction = pygame.math.Vector2()
         self.speed = 5
-        self.diagonal_speed = 0.707
+        self.diagonal_factor = 0.707
         self.health = 100
         self.last_shot = pygame.time.get_ticks()
-        self.shot_delay = 3000
-        self.facing = "right"
+        self.shot_delay = 1500
 
     def input(self):
         keys = pygame.key.get_pressed()
-
+        
         dx = 0
         dy = 0
-
-        if keys[K_UP]:
+        
+        if keys[pygame.K_UP]:
             dy -= 1
-        if keys[K_DOWN]:
+        if keys[pygame.K_DOWN]:
             dy += 1
-        if keys[K_LEFT]:
+        if keys[pygame.K_LEFT]:
             dx -= 1
-        if keys[K_RIGHT]:
+            self.facing = "left"
+        if keys[pygame.K_RIGHT]:
             dx += 1
-        return dx, dy
-
+            self.facing = "right"
+            
         # Normalize diagonal movement
         if dx != 0 and dy != 0:
-            dx *= self.diagonal_speed
-            dy *= self.diagonal_speed
-
+            dx *= self.diagonal_factor
+            dy *= self.diagonal_factor
+            
         # Apply speed
         self.direction.x = dx * self.speed
         self.direction.y = dy * self.speed
 
-
     def update(self):
+        # Store previous facing direction
+        old_facing = self.facing
+        
         self.input()  # Get input first
+        
+        # Only flip if direction changed
+        if old_facing != self.facing:
+            self.surf = pygame.transform.flip(self.surf, True, False)
         
         # Apply movement
         self.rect.x += self.direction.x
         self.rect.y += self.direction.y
-        
-        # Handle sprite flipping for direction
-        if self.direction.x < 0:  # Moving left
-            if self.facing != "left":
-                self.facing = "left"
-                self.surf = pygame.transform.flip(self.surf, True, False)
-        elif self.direction.x > 0:  # Moving right
-            if self.facing != "right":
-                self.facing = "right"
-                self.surf = pygame.transform.flip(self.surf, True, False)
         
         # Keep player on the screen
         self.rect.clamp_ip(pygame.Rect(0, 0, MAP_WIDTH, MAP_HEIGHT))
@@ -96,7 +93,13 @@ class Player(pygame.sprite.Sprite):
             self.kill()
 
     def attack(self):
-        fireball = Fireball(self.rect.x, self.rect.y, self.direction)
+        # Create a direction vector based on which way the player is facing
+        if self.facing == "right":
+            direction = pygame.math.Vector2(1, 0)
+        else:  # facing left
+            direction = pygame.math.Vector2(-1, 0)
+            
+        fireball = Fireball(self.rect.x, self.rect.y, direction)
         return fireball, fireball.damage
 
 
@@ -112,44 +115,22 @@ class Zombie(pygame.sprite.Sprite):
         self.speed = random.randint(1, 3)
         self.player = player
         self.health = 10
-        self.knockback_distance = 100
         self.last_collision = 0
         self.collision_cooldown = 500  # Milliseconds between collisions
 
     def update(self):
-        old_pos = self.rect.copy()
-        
-        # Move the zombie toward the player
+        # Move towards player
         if self.rect.x < self.player.rect.x:
-            self.rect.move_ip(self.speed, 0)
+            self.rect.x += self.speed
         if self.rect.x > self.player.rect.x:
-            self.rect.move_ip(-self.speed, 0)
+            self.rect.x -= self.speed
         if self.rect.y < self.player.rect.y:
-            self.rect.move_ip(0, self.speed)
+            self.rect.y += self.speed
         if self.rect.y > self.player.rect.y:
-            self.rect.move_ip(0, -self.speed)
+            self.rect.y -= self.speed
 
-        # Check collision with player
-        current_time = pygame.time.get_ticks()
-        if (current_time - self.last_collision >= self.collision_cooldown and 
-            self.rect.colliderect(self.player.rect)):
-            self.last_collision = current_time
-            
-            # Calculate knockback direction
-            dx = self.rect.centerx - self.player.rect.centerx
-            dy = self.rect.centery - self.player.rect.centery
-            
-            # Normalize the direction and apply knockback
-            length = max(1, (dx**2 + dy**2)**0.5)  # Avoid division by zero
-            dx = (dx / length) * self.knockback_distance
-            dy = (dy / length) * self.knockback_distance
-            
-            self.rect.x += dx
-            self.rect.y += dy
-            
-            # Apply damage
-            self.player.take_damage(1)
-            self.take_damage(2)
+        # Keep zombie on screen
+        self.rect.clamp_ip(pygame.Rect(0, 0, MAP_WIDTH, MAP_HEIGHT))
 
     def take_damage(self, damage):
         self.health -= damage
@@ -178,20 +159,14 @@ class Fireball(pygame.sprite.Sprite):
         self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect(center=(x, y))
         self.direction = direction
-        self.speed = 10
+        self.speed = 30
         self.damage = 10
-        print(f"Fireball created at {x}, {y} going {direction}")  # Debug print
 
     def update(self):
-        if self.direction == "right":
-            self.rect.move_ip(self.speed, 0)
-        if self.direction == "left":
-            self.rect.move_ip(-self.speed, 0)
-        if self.direction == "up":
-            self.rect.move_ip(0, -self.speed)
-        if self.direction == "down":
-            self.rect.move_ip(0, self.speed)
-
+        # Move in the fixed direction
+        self.rect.x += self.direction.x * self.speed
+        self.rect.y += self.direction.y * self.speed
+        
         # Remove fireball when it leaves the screen
         if self.rect.right < 0 or self.rect.left > MAP_WIDTH:
             self.kill()
@@ -258,15 +233,15 @@ class Game:
                 ):
                     running = False
 
+            # Get pressed keys but don't pass them to update
             pressed_keys = pygame.key.get_pressed()
-
-            attack_result = self.player.update(pressed_keys)
+            
+            # Change this line to not pass pressed_keys
+            attack_result = self.player.update()
             if attack_result is not None:
                 fireball, damage = attack_result
                 self.fireballs.add(fireball)
                 print(f"Number of fireballs: {len(self.fireballs)}, Damage: {damage}")  # Debug print
-
-            # self.player.update(pressed_keys)
 
             self.zombies.update()
             self.fireballs.update()
@@ -308,6 +283,26 @@ class Game:
                     # Remove the fireball
                     fireball.kill()
                     print(f"Hit zombie! Zombie health: {zombie_hit.health}")
+
+            # Add zombie-player collision check with knockback
+            zombie_collision = pygame.sprite.spritecollideany(self.player, self.zombies)
+            if zombie_collision:
+                current_time = pygame.time.get_ticks()
+                if current_time - zombie_collision.last_collision >= zombie_collision.collision_cooldown:
+                    self.player.take_damage(1)
+                    zombie_collision.take_damage(3)
+                    zombie_collision.last_collision = current_time
+                    
+                    # Add knockback
+                    knockback_distance = 100
+                    if zombie_collision.rect.x < self.player.rect.x:
+                        zombie_collision.rect.x -= knockback_distance
+                    else:
+                        zombie_collision.rect.x += knockback_distance
+                    if zombie_collision.rect.y < self.player.rect.y:
+                        zombie_collision.rect.y -= knockback_distance
+                    else:
+                        zombie_collision.rect.y += knockback_distance
 
             pygame.display.flip()
             self.clock.tick(60)
