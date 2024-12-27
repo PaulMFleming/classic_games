@@ -318,6 +318,23 @@ def write_high_score(score):
     with open("high_score.json", "w") as file:
         json.dump({"high_score": score}, file)
 
+class PowerUp(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super(PowerUp, self).__init__()
+        self.surf = pygame.Surface((30, 30), pygame.SRCALPHA)
+        
+        # Draw red orb with glow effect
+        pygame.draw.circle(self.surf, (255, 0, 0), (15, 15), 15)  # Main red circle
+        pygame.draw.circle(self.surf, (255, 200, 200), (10, 10), 5)  # Highlight
+        
+        self.rect = self.surf.get_rect(center=(x, y))
+        self.creation_time = pygame.time.get_ticks()
+        self.lifetime = 10000  # Disappear after 10 seconds if not collected
+
+    def update(self):
+        if pygame.time.get_ticks() - self.creation_time > self.lifetime:
+            self.kill()
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -339,6 +356,9 @@ class Game:
         self.zombies = pygame.sprite.Group()
         self.fireballs = pygame.sprite.Group()
         self.shockwaves = pygame.sprite.Group()
+        self.power_ups = pygame.sprite.Group()  # Add power-ups group
+        self.last_power_up_spawn = pygame.time.get_ticks()
+        self.power_up_spawn_delay = 15000  # 15 seconds between power-ups
 
         # Add spawn control variables
         self.zombie_spawn_delay = 2000  # Start with 2 seconds between spawns
@@ -561,10 +581,44 @@ class Game:
                     running = False
                     break
 
+            # Update and draw power-ups
+            self.power_ups.update()
+            for power_up in self.power_ups:
+                self.screen.blit(power_up.surf, self.camera.apply(power_up))
+            
+            # Spawn power-ups periodically
+            current_time = pygame.time.get_ticks()
+            if current_time - self.last_power_up_spawn >= self.power_up_spawn_delay:
+                self.spawn_power_up()
+                self.last_power_up_spawn = current_time
+            
+            # Check for power-up collection
+            power_up_collision = pygame.sprite.spritecollideany(self.player, self.power_ups)
+            if power_up_collision:
+                self.player.fireball_damage += 2  # Increase fireball damage
+                print(f"Power-up collected! Fireball damage increased to {self.player.fireball_damage}")  # Debug message
+                power_up_collision.kill()
+
             pygame.display.flip()
             self.clock.tick(60)
 
         pygame.quit()
+
+    def spawn_power_up(self):
+        # Spawn away from player
+        while True:
+            x = random.randint(100, MAP_WIDTH - 100)
+            y = random.randint(100, MAP_HEIGHT - 100)
+            # Check distance from player
+            dx = x - self.player.rect.centerx
+            dy = y - self.player.rect.centery
+            distance = math.sqrt(dx * dx + dy * dy)
+            if distance > 200:  # At least 200 pixels from player
+                break
+        
+        power_up = PowerUp(x, y)
+        self.power_ups.add(power_up)
+        print(f"Power-up spawned at ({x}, {y})")  # Debug message
 
 
 class ShockWave(pygame.sprite.Sprite):
