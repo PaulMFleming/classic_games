@@ -37,6 +37,8 @@ class Player(pygame.sprite.Sprite):
         self.last_shot = pygame.time.get_ticks()
         self.shot_delay = 1500
         self.score = 0
+        self.shockwave_interval = 3000
+        self.last_shockwave = 0
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -86,6 +88,12 @@ class Player(pygame.sprite.Sprite):
         if current_time - self.last_shot >= self.shot_delay:
             self.last_shot = current_time
             return self.attack()
+
+        # Auto Version
+        if current_time - self.last_shockwave >= self.shockwave_interval:
+            self.last_shockwave = current_time
+            return self.create_shockwave()
+        
         return None
 
     def take_damage(self, damage):
@@ -102,6 +110,10 @@ class Player(pygame.sprite.Sprite):
             
         fireball = Fireball(self.rect.x, self.rect.y, direction)
         return fireball, fireball.damage
+
+    def create_shockwave(self):
+        shockwave = ShockWave(self.rect.centerx, self.rect.centery)
+        return shockwave, shockwave.damage
 
 
 #############################################
@@ -223,6 +235,7 @@ class Game:
 
         self.zombies = pygame.sprite.Group()
         self.fireballs = pygame.sprite.Group()
+        self.shockwaves = pygame.sprite.Group()
 
         # Add spawn control variables
         self.zombie_spawn_delay = 2000  # Start with 2 seconds between spawns
@@ -273,11 +286,14 @@ class Game:
             # Change this line to not pass pressed_keys
             attack_result = self.player.update()
             if attack_result is not None:
-                fireball, damage = attack_result
-                self.fireballs.add(fireball)
+                if isinstance(attack_result[0], Fireball):
+                    self.fireballs.add(attack_result[0])
+                elif isinstance(attack_result[0], ShockWave):
+                    self.shockwaves.add(attack_result[0])
 
             self.zombies.update()
             self.fireballs.update()
+            self.shockwaves.update()
 
             self.camera.update(self.player)
 
@@ -299,6 +315,8 @@ class Game:
                     self.screen, (255, 0, 0), self.camera.apply(fireball), 1
                 )  # Debug rectangle
                 self.screen.blit(fireball.surf, self.camera.apply(fireball))
+            for shockwave in self.shockwaves:
+                self.screen.blit(shockwave.surf, self.camera.apply(shockwave))
 
             # Draw health and score
             debug_text = self.debug_font.render(
@@ -346,10 +364,47 @@ class Game:
                 if self.zombie_spawn_delay > self.min_spawn_delay:
                     self.zombie_spawn_delay -= self.difficulty_increase_rate
 
+            # Check for shockwave collisions
+            for shockwave in self.shockwaves:
+                for zombie in self.zombies:
+                    # Calculate distance between zombie and shockwave center
+                    distance = ((zombie.rect.centerx - shockwave.center_x) ** 2 + 
+                              (zombie.rect.centery - shockwave.center_y) ** 2) ** 0.5
+                    if distance <= shockwave.radius:
+                        zombie.take_damage(shockwave.damage)
+
             pygame.display.flip()
             self.clock.tick(60)
 
     pygame.quit()
+
+
+class ShockWave(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super(ShockWave, self).__init__()
+        self.center_x = x
+        self.center_y = y
+        self.radius = 10  # Starting radius
+        self.max_radius = 200  # How big the wave gets
+        self.growth_speed = 8  # How fast it expands
+        self.damage = 5
+        # Create a surface big enough for the maximum radius
+        self.surf = pygame.Surface((self.max_radius * 2, self.max_radius * 2), pygame.SRCALPHA)
+        self.rect = self.surf.get_rect(center=(x, y))
+
+    def update(self):
+        # Clear the surface
+        self.surf.fill((0, 0, 0, 0))
+        # Draw the circle
+        pygame.draw.circle(self.surf, (0, 255, 255, 128), 
+                         (self.max_radius, self.max_radius), self.radius)
+        
+        # Expand the radius
+        self.radius += self.growth_speed
+        
+        # Kill the sprite when it reaches max size
+        if self.radius >= self.max_radius:
+            self.kill()
 
 
 if __name__ == "__main__":
