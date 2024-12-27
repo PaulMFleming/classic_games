@@ -232,15 +232,18 @@ class Zombie(pygame.sprite.Sprite):
         self.rect.clamp_ip(pygame.Rect(0, 0, MAP_WIDTH, MAP_HEIGHT))
 
     def take_damage(self, damage):
+        # Don't apply damage if already dying
+        if self.is_dying:
+            return
+            
         self.health -= damage
-        if self.health <= 0 and not self.is_dying:
+        print(f"Zombie took {damage} damage. Health now: {self.health}")  # Better debug message
+        
+        if self.health <= 0:
+            self.health = 0  # Prevent negative health
             self.is_dying = True
             self.death_start_time = pygame.time.get_ticks()
-            self.player.score += 1
-            # Add XP and create floating text
-            self.player.add_xp(5)
-            xp_text = XPText(self.rect.centerx, self.rect.top, 5)
-            Game.instance.xp_texts.add(xp_text)
+            self.player.score += 1  # Increment score when zombie dies
 
     def start_bounce_animation(self):
         if not self.is_scaling:
@@ -498,7 +501,7 @@ class Game:
 
             # Draw health and score
             debug_text = self.debug_font.render(
-                f"Score: {self.player.score} | Health: {self.player.health}", 
+                f"Score: {self.player.score} | Health: {self.player.health} | Level: {self.player.level} | XP: {self.player.xp}/{self.player.xp_to_level}", 
                 True, (255, 255, 255)
             )
             self.screen.blit(debug_text, (10, 10))
