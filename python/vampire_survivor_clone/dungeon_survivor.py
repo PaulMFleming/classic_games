@@ -66,10 +66,7 @@ class Player(pygame.sprite.Sprite):
 
     def attack(self):
         fireball = Fireball(self.rect.x, self.rect.y, self.direction)
-        print(
-            f"Player attacking from {self.rect.centerx}, {self.rect.centery}"
-        )  # Debug print
-        return fireball
+        return fireball, fireball.damage
 
 
 #############################################
@@ -100,6 +97,11 @@ class Zombie(pygame.sprite.Sprite):
         self.health -= damage
         if self.health <= 0:
             self.kill()
+
+    def attack(self):
+        return ZombieAttack(self.rect.x, self.rect.y, self.direction)
+
+    
 
     @staticmethod
     def spawn_zombie(player):
@@ -200,10 +202,11 @@ class Game:
 
             pressed_keys = pygame.key.get_pressed()
 
-            new_fireball = self.player.update(pressed_keys)
-            if new_fireball is not None:
-                self.fireballs.add(new_fireball)
-                print(f"Number of fireballs: {len(self.fireballs)}")  # Debug print
+            attack_result = self.player.update(pressed_keys)
+            if attack_result is not None:
+                fireball, damage = attack_result
+                self.fireballs.add(fireball)
+                print(f"Number of fireballs: {len(self.fireballs)}, Damage: {damage}")  # Debug print
 
             # self.player.update(pressed_keys)
 
@@ -236,6 +239,16 @@ class Game:
                 f"Fireballs: {len(self.fireballs)}", True, (255, 255, 255)
             )
             self.screen.blit(debug_text, (10, 10))
+
+            # Check for collisions between fireballs and zombies
+            for fireball in self.fireballs:
+                zombie_hit = pygame.sprite.spritecollideany(fireball, self.zombies)
+                if zombie_hit:
+                    # Apply damage to zombie
+                    zombie_hit.take_damage(fireball.damage)
+                    # Remove the fireball
+                    fireball.kill()
+                    print(f"Hit zombie! Zombie health: {zombie_hit.health}")
 
             pygame.display.flip()
             self.clock.tick(60)
