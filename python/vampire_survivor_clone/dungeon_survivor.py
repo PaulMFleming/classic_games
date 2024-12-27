@@ -437,32 +437,28 @@ class Game:
                 for zombie in self.zombies:
                     if zombie.is_dying:  # Skip if already dying
                         continue
-                    # Calculate distance between zombie and shockwave center
-                    distance = ((zombie.rect.centerx - shockwave.center_x) ** 2 + 
-                              (zombie.rect.centery - shockwave.center_y) ** 2) ** 0.5
-                    if distance <= shockwave.radius:
+                    # Use the arc collision detection
+                    if shockwave.is_point_in_arc(zombie.rect.centerx, zombie.rect.centery):
                         zombie.take_damage(shockwave.damage)
-
-            # Add zombie-player collision check with knockback
-            zombie_collision = pygame.sprite.spritecollideany(self.player, self.zombies)
-            if zombie_collision:
-                current_time = pygame.time.get_ticks()
-                if current_time - zombie_collision.last_collision >= zombie_collision.collision_cooldown:
-                    self.player.take_damage(1)
-                    # zombie_collision.take_damage(3)
-                    zombie_collision.last_collision = current_time
-                    zombie_collision.start_bounce_animation()  # Start bounce animation
-                    
-                    # Add knockback
-                    knockback_distance = 100
-                    if zombie_collision.rect.x < self.player.rect.x:
-                        zombie_collision.rect.x -= knockback_distance
-                    else:
-                        zombie_collision.rect.x += knockback_distance
-                    if zombie_collision.rect.y < self.player.rect.y:
-                        zombie_collision.rect.y -= knockback_distance
-                    else:
-                        zombie_collision.rect.y += knockback_distance
+                        zombie.start_bounce_animation()  # Start bounce animation
+                        
+                        # Calculate knockback direction based on shockwave's center
+                        knockback_distance = 150
+                        dx = zombie.rect.centerx - shockwave.center_x
+                        dy = zombie.rect.centery - shockwave.center_y
+                        
+                        # Normalize the direction
+                        length = math.sqrt(dx * dx + dy * dy)
+                        if length > 0:  # Avoid division by zero
+                            dx = (dx / length) * knockback_distance
+                            dy = (dy / length) * knockback_distance
+                        
+                        # Apply knockback
+                        zombie.rect.x += dx
+                        zombie.rect.y += dy
+                        # Update the zombie's position vector too
+                        zombie.pos.x = zombie.rect.x
+                        zombie.pos.y = zombie.rect.y
 
             # Handle zombie spawning
             current_time = pygame.time.get_ticks()
@@ -472,6 +468,30 @@ class Game:
                 # Increase difficulty (decrease spawn delay)
                 if self.zombie_spawn_delay > self.min_spawn_delay:
                     self.zombie_spawn_delay -= self.difficulty_increase_rate
+
+            # Modify zombie-player collision check
+            zombie_collision = pygame.sprite.spritecollideany(self.player, self.zombies)
+            if zombie_collision:
+                current_time = pygame.time.get_ticks()
+                if current_time - zombie_collision.last_collision >= zombie_collision.collision_cooldown:
+                    self.player.take_damage(1)
+                    zombie_collision.last_collision = current_time
+                    zombie_collision.start_bounce_animation()
+                    
+                    # Add knockback
+                    knockback_distance = 100
+                    if zombie_collision.rect.x < self.player.rect.x:
+                        zombie_collision.rect.x -= knockback_distance
+                        zombie_collision.pos.x = zombie_collision.rect.x  # Update position vector
+                    else:
+                        zombie_collision.rect.x += knockback_distance
+                        zombie_collision.pos.x = zombie_collision.rect.x  # Update position vector
+                    if zombie_collision.rect.y < self.player.rect.y:
+                        zombie_collision.rect.y -= knockback_distance
+                        zombie_collision.pos.y = zombie_collision.rect.y  # Update position vector
+                    else:
+                        zombie_collision.rect.y += knockback_distance
+                        zombie_collision.pos.y = zombie_collision.rect.y  # Update position vector
 
             pygame.display.flip()
             self.clock.tick(60)
@@ -486,7 +506,7 @@ class ShockWave(pygame.sprite.Sprite):
         self.center_y = y
         self.radius = 10
         self.max_radius = 150
-        self.growth_speed = 6
+        self.growth_speed = 12
         self.damage = 1
         
         # Arc parameters
