@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 from pygame.locals import (
     RLEACCEL,
@@ -144,6 +145,37 @@ class Zombie(pygame.sprite.Sprite):
         self.death_duration = 1000  # 1 second for death animation
         self.flash_interval = 100  # Flash every 100ms
         self.visible = True
+        
+        # Vector movement attributes
+        self.pos = pygame.math.Vector2(x, y)
+        self.vel = pygame.math.Vector2()
+        self.acceleration = pygame.math.Vector2()
+        
+        # Randomize zombie personality
+        self.max_speed = random.uniform(1.0, 3.0)
+        self.steering_force = random.uniform(0.05, 0.15)
+        
+        # Wandering attributes
+        self.wander_angle = random.uniform(0, math.pi * 2)
+        self.wander_radius = random.uniform(30, 70)
+        self.angle_change = random.uniform(0.2, 0.4)
+        
+        # Randomize behavior weights
+        self.wander_weight = random.uniform(0.2, 0.4)
+        self.seek_weight = 1.0 - self.wander_weight
+        
+        # Assign personality type
+        if self.wander_weight > 0.35:
+            self.personality = "Wanderer"
+        elif self.max_speed > 2.5:
+            self.personality = "Speedy"
+        elif self.steering_force > 0.12:
+            self.personality = "Agile"
+        else:
+            self.personality = "Hunter"
+        
+        # Debug font
+        self.debug_font = pygame.font.Font(None, 20)
 
     def update(self):
         current_time = pygame.time.get_ticks()
@@ -367,6 +399,16 @@ class Game:
             for zombie in self.zombies:
                 if not zombie.is_dying or (zombie.is_dying and zombie.visible):
                     self.screen.blit(zombie.surf, self.camera.apply(zombie))
+                    
+                    # Draw personality type above zombie
+                    debug_text = zombie.debug_font.render(
+                        f"{zombie.personality} ({int(zombie.health)}hp)", 
+                        True, (255, 255, 255)
+                    )
+                    text_rect = debug_text.get_rect(
+                        midbottom=self.camera.apply(zombie).midtop
+                    )
+                    self.screen.blit(debug_text, text_rect)
             for fireball in self.fireballs:
                 pygame.draw.rect(
                     self.screen, (255, 0, 0), self.camera.apply(fireball), 1
@@ -406,7 +448,7 @@ class Game:
                 current_time = pygame.time.get_ticks()
                 if current_time - zombie_collision.last_collision >= zombie_collision.collision_cooldown:
                     self.player.take_damage(1)
-                    zombie_collision.take_damage(3)
+                    # zombie_collision.take_damage(3)
                     zombie_collision.last_collision = current_time
                     zombie_collision.start_bounce_animation()  # Start bounce animation
                     
