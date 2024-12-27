@@ -37,7 +37,7 @@ class Player(pygame.sprite.Sprite):
         self.last_shot = pygame.time.get_ticks()
         self.shot_delay = 1500
         self.score = 0
-        self.shockwave_interval = 3000
+        self.shockwave_interval = 5000
         self.last_shockwave = 0
 
     def input(self):
@@ -130,8 +130,52 @@ class Zombie(pygame.sprite.Sprite):
         self.health = 10
         self.last_collision = 0
         self.collision_cooldown = 500  # Milliseconds between collisions
+        
+        # Animation states
+        self.original_surf = self.surf.copy()  # Store original surface
+        self.current_scale = 1.0
+        self.is_scaling = False
+        self.scale_start_time = 0
+        self.scale_duration = 300  # 1 second for scale animation
+        
+        # Death animation
+        self.is_dying = False
+        self.death_start_time = 0
+        self.death_duration = 1000  # 1 second for death animation
+        self.flash_interval = 100  # Flash every 100ms
+        self.visible = True
 
     def update(self):
+        current_time = pygame.time.get_ticks()
+        
+        # Handle bounce animation
+        if self.is_scaling:
+            progress = (current_time - self.scale_start_time) / self.scale_duration
+            if progress <= 0.25:  # First quarter - scale up to 1.1
+                self.current_scale = 1.0 + (0.1 * (progress * 4))
+            elif progress <= 0.75:  # Middle half - scale down to 0.9
+                self.current_scale = 1.1 - (0.2 * ((progress - 0.25) * 2))
+            elif progress <= 1:  # Last quarter - return to normal
+                self.current_scale = 0.9 + (0.1 * ((progress - 0.75) * 4))
+            else:  # Animation complete
+                self.current_scale = 1.0
+                self.is_scaling = False
+            
+            # Apply scale
+            scaled_size = (
+                int(self.original_surf.get_width() * self.current_scale),
+                int(self.original_surf.get_height() * self.current_scale)
+            )
+            self.surf = pygame.transform.scale(self.original_surf, scaled_size)
+        
+        # Handle death animation
+        if self.is_dying:
+            if current_time - self.death_start_time >= self.death_duration:
+                self.kill()  # Actually remove the zombie
+            else:
+                # Toggle visibility based on flash interval
+                self.visible = ((current_time - self.death_start_time) // self.flash_interval) % 2 == 0
+        
         # Move towards player
         if self.rect.x < self.player.rect.x:
             self.rect.x += self.speed
@@ -146,11 +190,23 @@ class Zombie(pygame.sprite.Sprite):
         self.rect.clamp_ip(pygame.Rect(0, 0, MAP_WIDTH, MAP_HEIGHT))
 
     def take_damage(self, damage):
+        # Don't apply damage if already dying
+        if self.is_dying:
+            return
+            
         self.health -= damage
+        print(f"Zombie took {damage} damage. Health now: {self.health}")  # Better debug message
+        
         if self.health <= 0:
-            self.kill()
-            self.player.score += 1
-            print(f"Zombie killed! Score: {self.player.score}")
+            self.health = 0  # Prevent negative health
+            self.is_dying = True
+            self.death_start_time = pygame.time.get_ticks()
+            self.player.score += 1  # Increment score when zombie dies
+
+    def start_bounce_animation(self):
+        if not self.is_scaling:
+            self.is_scaling = True
+            self.scale_start_time = pygame.time.get_ticks()
 
     def attack(self):
         return ZombieAttack(self.rect.x, self.rect.y, self.direction)
@@ -309,7 +365,8 @@ class Game:
 
             self.screen.blit(self.player.surf, self.camera.apply(self.player))
             for zombie in self.zombies:
-                self.screen.blit(zombie.surf, self.camera.apply(zombie))
+                if not zombie.is_dying or (zombie.is_dying and zombie.visible):
+                    self.screen.blit(zombie.surf, self.camera.apply(zombie))
             for fireball in self.fireballs:
                 pygame.draw.rect(
                     self.screen, (255, 0, 0), self.camera.apply(fireball), 1
@@ -328,12 +385,20 @@ class Game:
             # Check for collisions between fireballs and zombies
             for fireball in self.fireballs:
                 zombie_hit = pygame.sprite.spritecollideany(fireball, self.zombies)
-                if zombie_hit:
-                    # Apply damage to zombie
+                if zombie_hit and not zombie_hit.is_dying:  # Only hit if not already dying
                     zombie_hit.take_damage(fireball.damage)
-                    # Remove the fireball
                     fireball.kill()
-                    print(f"Hit zombie! Zombie health: {zombie_hit.health}")
+
+            # Check for shockwave collisions
+            for shockwave in self.shockwaves:
+                for zombie in self.zombies:
+                    if zombie.is_dying:  # Skip if already dying
+                        continue
+                    # Calculate distance between zombie and shockwave center
+                    distance = ((zombie.rect.centerx - shockwave.center_x) ** 2 + 
+                              (zombie.rect.centery - shockwave.center_y) ** 2) ** 0.5
+                    if distance <= shockwave.radius:
+                        zombie.take_damage(shockwave.damage)
 
             # Add zombie-player collision check with knockback
             zombie_collision = pygame.sprite.spritecollideany(self.player, self.zombies)
@@ -343,6 +408,7 @@ class Game:
                     self.player.take_damage(1)
                     zombie_collision.take_damage(3)
                     zombie_collision.last_collision = current_time
+                    zombie_collision.start_bounce_animation()  # Start bounce animation
                     
                     # Add knockback
                     knockback_distance = 100
@@ -364,15 +430,6 @@ class Game:
                 if self.zombie_spawn_delay > self.min_spawn_delay:
                     self.zombie_spawn_delay -= self.difficulty_increase_rate
 
-            # Check for shockwave collisions
-            for shockwave in self.shockwaves:
-                for zombie in self.zombies:
-                    # Calculate distance between zombie and shockwave center
-                    distance = ((zombie.rect.centerx - shockwave.center_x) ** 2 + 
-                              (zombie.rect.centery - shockwave.center_y) ** 2) ** 0.5
-                    if distance <= shockwave.radius:
-                        zombie.take_damage(shockwave.damage)
-
             pygame.display.flip()
             self.clock.tick(60)
 
@@ -387,7 +444,7 @@ class ShockWave(pygame.sprite.Sprite):
         self.radius = 10  # Starting radius
         self.max_radius = 200  # How big the wave gets
         self.growth_speed = 8  # How fast it expands
-        self.damage = 5
+        self.damage = 1
         # Create a surface big enough for the maximum radius
         self.surf = pygame.Surface((self.max_radius * 2, self.max_radius * 2), pygame.SRCALPHA)
         self.rect = self.surf.get_rect(center=(x, y))
