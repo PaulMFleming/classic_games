@@ -207,6 +207,7 @@ class Game:
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
+        self.score = 0
 
         # Add debug font initialization
         self.debug_font = pygame.font.Font(None, 36)
@@ -241,7 +242,6 @@ class Game:
             if attack_result is not None:
                 fireball, damage = attack_result
                 self.fireballs.add(fireball)
-                print(f"Number of fireballs: {len(self.fireballs)}, Damage: {damage}")  # Debug print
 
             self.zombies.update()
             self.fireballs.update()
@@ -267,9 +267,9 @@ class Game:
                 )  # Debug rectangle
                 self.screen.blit(fireball.surf, self.camera.apply(fireball))
 
-            # Draw debug info
+            # Draw health and score
             debug_text = self.debug_font.render(
-                f"Fireballs: {len(self.fireballs)} | Health: {self.player.health}", 
+                f"Score: {self.score} | Health: {self.player.health}", 
                 True, (255, 255, 255)
             )
             self.screen.blit(debug_text, (10, 10))
