@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import json
 
 from pygame.locals import (
     RLEACCEL,
@@ -306,6 +307,17 @@ class Camera:
         self.camera = pygame.Rect(x, y, self.width, self.height)
 
 
+def read_high_score():
+    try:
+        with open("high_score.json", "r") as file:
+            return json.load(file)["high_score"]
+    except (FileNotFoundError, json.JSONDecodeError, KeyError):
+        return 0
+
+def write_high_score(score):
+    with open("high_score.json", "w") as file:
+        json.dump({"high_score": score}, file)
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -315,6 +327,8 @@ class Game:
 
         # Add debug font initialization
         self.debug_font = pygame.font.Font(None, 36)
+        self.game_over_font = pygame.font.Font(None, 72)
+        self.high_score = read_high_score()
 
         self.bg_tile = pygame.image.load("images/background.png")
         self.tile_size = self.bg_tile.get_width()
@@ -359,6 +373,45 @@ class Game:
 
         zombie = Zombie(x, y, self.player)
         self.zombies.add(zombie)
+
+    def show_game_over_screen(self):
+        game_over = True
+        while game_over:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    return False
+                if event.type == KEYDOWN:
+                    if event.key == K_ESCAPE or event.key == K_q:
+                        return False
+                    if event.key == K_SPACE:
+                        return True
+
+            self.screen.fill((0, 0, 0))
+            
+            # Game Over text
+            game_over_text = self.game_over_font.render("Game Over", True, (255, 255, 255))
+            game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/3))
+            
+            # Score text
+            score_text = self.debug_font.render(f"Final Score: {self.player.score}", True, (255, 255, 255))
+            score_rect = score_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+            
+            # High Score text
+            high_score_text = self.debug_font.render(f"High Score: {self.high_score}", True, (255, 255, 255))
+            high_score_rect = high_score_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 50))
+            
+            # Instructions text
+            instructions_text = self.debug_font.render("Press SPACE to restart or ESC to quit", True, (255, 255, 255))
+            instructions_rect = instructions_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 + 150))
+            
+            # Draw everything
+            self.screen.blit(game_over_text, game_over_rect)
+            self.screen.blit(score_text, score_rect)
+            self.screen.blit(high_score_text, high_score_rect)
+            self.screen.blit(instructions_text, instructions_rect)
+            
+            pygame.display.flip()
+            self.clock.tick(60)
 
     def run(self):
         running = True
@@ -493,10 +546,25 @@ class Game:
                         zombie_collision.rect.y += knockback_distance
                         zombie_collision.pos.y = zombie_collision.rect.y  # Update position vector
 
+            # Check for player death
+            if self.player.health <= 0:
+                # Update high score if needed
+                if self.player.score > self.high_score:
+                    self.high_score = self.player.score
+                    write_high_score(self.high_score)
+                
+                # Show game over screen and handle restart
+                if self.show_game_over_screen():
+                    # Reset game state for restart
+                    self.__init__()
+                else:
+                    running = False
+                    break
+
             pygame.display.flip()
             self.clock.tick(60)
 
-    pygame.quit()
+        pygame.quit()
 
 
 class ShockWave(pygame.sprite.Sprite):
