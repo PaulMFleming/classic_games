@@ -126,17 +126,6 @@ class Player(pygame.sprite.Sprite):
         shockwave = ShockWave(self.rect.centerx, self.rect.centery, self.facing)
         return shockwave, shockwave.damage
 
-    def add_xp(self, amount):
-        self.xp += amount
-        if self.xp >= self.xp_to_level:
-            self.level_up()
-            
-    def level_up(self):
-        self.level += 1
-        self.xp = 0  # Reset XP
-        self.fireball_damage = self.base_fireball_damage + (self.level - 1) * 5
-        print(f"Level Up! Level {self.level} - Fireball damage increased to {self.fireball_damage}")
-
 
 #############################################
 ## Enemies ##
@@ -703,6 +692,27 @@ class ShockWave(pygame.sprite.Sprite):
         return (distance <= self.radius and 
                 distance >= self.radius - max(1, int(self.radius / 3)) and 
                 relative_angle <= self.arc_angle)
+
+
+class XPText(pygame.sprite.Sprite):
+    def __init__(self, x, y, amount):
+        super(XPText, self).__init__()
+        self.font = pygame.font.Font(None, 36)
+        self.surf = self.font.render(f"+{amount}XP", True, (0, 255, 0))
+        self.rect = self.surf.get_rect(center=(x, y))
+        self.creation_time = pygame.time.get_ticks()
+        self.lifetime = 1000  # Show for 1 second
+        self.y_offset = 0
+        self.float_speed = 1
+        
+    def update(self):
+        # Float upward
+        self.y_offset -= self.float_speed
+        self.rect.y = self.rect.y + self.y_offset
+        
+        # Check if lifetime is over
+        if pygame.time.get_ticks() - self.creation_time > self.lifetime:
+            self.kill()
 
 
 if __name__ == "__main__":
