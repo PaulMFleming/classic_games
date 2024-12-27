@@ -41,6 +41,9 @@ class Player(pygame.sprite.Sprite):
         self.score = 0
         self.shockwave_interval = 3000
         self.last_shockwave = 0
+        self.fireball_damage = 10  # Changed base damage to 10
+        self.base_shot_delay = 1500
+        self.shot_delay = self.base_shot_delay
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -329,7 +332,7 @@ class PowerUp(pygame.sprite.Sprite):
         
         self.rect = self.surf.get_rect(center=(x, y))
         self.creation_time = pygame.time.get_ticks()
-        self.lifetime = 10000  # Disappear after 10 seconds if not collected
+        self.lifetime = 45000  # Disappear after 45 seconds if not collected
 
     def update(self):
         if pygame.time.get_ticks() - self.creation_time > self.lifetime:
@@ -595,8 +598,8 @@ class Game:
             # Check for power-up collection
             power_up_collision = pygame.sprite.spritecollideany(self.player, self.power_ups)
             if power_up_collision:
-                self.player.fireball_damage += 2  # Increase fireball damage
-                print(f"Power-up collected! Fireball damage increased to {self.player.fireball_damage}")  # Debug message
+                self.player.shot_delay = max(300, self.player.shot_delay - 300)  # Decrease delay by 300ms, min 300ms
+                print(f"Power-up collected! Shot delay decreased to {self.player.shot_delay}ms")  # Debug message
                 power_up_collision.kill()
 
             pygame.display.flip()
