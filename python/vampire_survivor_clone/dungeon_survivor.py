@@ -298,7 +298,7 @@ class Game:
         self.last_spawn = pygame.time.get_ticks()
         self.min_spawn_delay = 500  # Fastest spawn rate (milliseconds)
         self.difficulty_increase_rate = 50  # How much to decrease delay
-        self.max_zombies = 100  # Maximum zombies allowed at once
+        self.max_zombies = 150  # Maximum zombies allowed at once
 
         for _ in range(10):
             zombie = Zombie.spawn_zombie(self.player)
