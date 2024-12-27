@@ -38,7 +38,7 @@ class Player(pygame.sprite.Sprite):
         self.last_shot = pygame.time.get_ticks()
         self.shot_delay = 1500
         self.score = 0
-        self.shockwave_interval = 5000
+        self.shockwave_interva3000
         self.last_shockwave = 0
 
     def input(self):
@@ -113,7 +113,8 @@ class Player(pygame.sprite.Sprite):
         return fireball, fireball.damage
 
     def create_shockwave(self):
-        shockwave = ShockWave(self.rect.centerx, self.rect.centery)
+        # Pass the facing direction to the ShockWave
+        shockwave = ShockWave(self.rect.centerx, self.rect.centery, self.facing)
         return shockwave, shockwave.damage
 
 
@@ -479,24 +480,45 @@ class Game:
 
 
 class ShockWave(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, player_facing):
         super(ShockWave, self).__init__()
         self.center_x = x
         self.center_y = y
-        self.radius = 10  # Starting radius
-        self.max_radius = 200  # How big the wave gets
-        self.growth_speed = 8  # How fast it expands
+        self.radius = 10
+        self.max_radius = 150
+        self.growth_speed = 6
         self.damage = 1
-        # Create a surface big enough for the maximum radius
+        
+        # Arc parameters
+        self.arc_angle = 120  # Degrees (1/3 of circle)
+        
+        # Set start_angle based on player facing direction
+        if player_facing == "right":
+            self.start_angle = -60  # Centers the 120-degree arc to the right (-60 to +60)
+        else:  # facing left
+            self.start_angle = 120  # Centers the 120-degree arc to the left (120 to 240)
+        
         self.surf = pygame.Surface((self.max_radius * 2, self.max_radius * 2), pygame.SRCALPHA)
         self.rect = self.surf.get_rect(center=(x, y))
 
     def update(self):
         # Clear the surface
         self.surf.fill((0, 0, 0, 0))
-        # Draw the circle
-        pygame.draw.circle(self.surf, (0, 255, 255, 128), 
-                         (self.max_radius, self.max_radius), self.radius)
+        
+        # Draw the arc instead of full circle
+        pygame.draw.arc(
+            self.surf,
+            (0, 255, 255, 128),  # Color with alpha
+            (
+                self.max_radius - self.radius,
+                self.max_radius - self.radius,
+                self.radius * 2,
+                self.radius * 2
+            ),
+            math.radians(self.start_angle),  # Start angle in radians
+            math.radians(self.start_angle + self.arc_angle),  # End angle
+            max(1, int(self.radius / 3))  # Line width
+        )
         
         # Expand the radius
         self.radius += self.growth_speed
@@ -504,6 +526,21 @@ class ShockWave(pygame.sprite.Sprite):
         # Kill the sprite when it reaches max size
         if self.radius >= self.max_radius:
             self.kill()
+
+    def is_point_in_arc(self, point_x, point_y):
+        # Calculate angle and distance to point
+        dx = point_x - self.center_x
+        dy = point_y - self.center_y
+        distance = math.sqrt(dx * dx + dy * dy)
+        angle = math.degrees(math.atan2(dy, dx)) % 360
+        
+        # Normalize the angle relative to start_angle
+        relative_angle = (angle - self.start_angle) % 360
+        
+        # Check if point is within arc
+        return (distance <= self.radius and 
+                distance >= self.radius - max(1, int(self.radius / 3)) and 
+                relative_angle <= self.arc_angle)
 
 
 if __name__ == "__main__":
