@@ -33,7 +33,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=(x, y))
         self.facing = "right"
         self.direction = pygame.math.Vector2()
-        self.speed = 5
+        self.speed = 7
         self.diagonal_factor = 0.707
         self.health = 100
         self.last_shot = pygame.time.get_ticks()
@@ -42,7 +42,7 @@ class Player(pygame.sprite.Sprite):
         self.shockwave_interval = 3000
         self.last_shockwave = 0
         self.fireball_damage = 10  # Changed base damage to 10
-        self.base_shot_delay = 1500
+        self.base_shot_delay = 500
         self.shot_delay = self.base_shot_delay
         self.xp = 0
         self.level = 1
@@ -118,7 +118,7 @@ class Player(pygame.sprite.Sprite):
         else:  # facing left
             direction = pygame.math.Vector2(-1, 0)
             
-        fireball = Fireball(self.rect.x, self.rect.y, direction)
+        fireball = Fireball(self.rect.x, self.rect.y, direction, self.fireball_damage)
         return fireball, fireball.damage
 
     def create_shockwave(self):
@@ -266,13 +266,13 @@ class Zombie(pygame.sprite.Sprite):
 #############################################
 ## Weapons ##
 class Fireball(pygame.sprite.Sprite):
-    def __init__(self, x, y, direction, damage=3):  # Default damage of 3
+    def __init__(self, x, y, direction, damage):
         super(Fireball, self).__init__()
         self.surf = pygame.image.load("images/fireball.png")
         self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect(center=(x, y))
         self.direction = direction
-        self.speed = 7
+        self.speed = 10
         self.damage = damage
 
     def update(self):
