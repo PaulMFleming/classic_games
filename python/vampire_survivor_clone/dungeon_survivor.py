@@ -161,11 +161,13 @@ class Player(pygame.sprite.Sprite):
         nearest = None
         min_dist = float('inf')
         for zombie in Game.instance.zombies:
-            dist = math.sqrt((zombie.rect.centerx - self.rect.centerx)**2 + 
-                           (zombie.rect.centery - self.rect.centery)**2)
-            if dist < min_dist:
-                min_dist = dist
-                nearest = zombie
+            # Only consider zombies that are north (above) of the player
+            if zombie.rect.centery < self.rect.centery:
+                dist = math.sqrt((zombie.rect.centerx - self.rect.centerx)**2 + 
+                               (zombie.rect.centery - self.rect.centery)**2)
+                if dist < min_dist:
+                    min_dist = dist
+                    nearest = zombie
         return nearest
 
     def create_bomb(self, x, y):
