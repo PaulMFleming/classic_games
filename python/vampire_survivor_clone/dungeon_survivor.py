@@ -49,6 +49,9 @@ class Player(pygame.sprite.Sprite):
         self.xp_to_level = 50
         self.base_fireball_damage = 10
         self.fireball_damage = self.base_fireball_damage
+        self.ice_blast_unlocked = False
+        self.ice_blast_delay = 5000  # 5 seconds between casts
+        self.last_ice_blast = 0
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -104,6 +107,20 @@ class Player(pygame.sprite.Sprite):
             self.last_shockwave = current_time
             return self.create_shockwave()
         
+        # Check if player has enough XP to unlock Ice Blast
+        if self.xp >= 100 and not self.ice_blast_unlocked:
+            self.ice_blast_unlocked = True
+            unlock_msg = UnlockMessage()
+            Game.instance.unlock_messages.add(unlock_msg)
+        
+        # Handle Ice Blast casting
+        if self.ice_blast_unlocked and current_time - self.last_ice_blast >= self.ice_blast_delay:
+            nearest_zombie = self.find_nearest_zombie()
+            if nearest_zombie:
+                ice_blast = IceBlast(self.rect.centerx, self.rect.centery, nearest_zombie)
+                Game.instance.ice_blasts.add(ice_blast)
+                self.last_ice_blast = current_time
+
         return None
 
     def take_damage(self, damage):
@@ -125,6 +142,17 @@ class Player(pygame.sprite.Sprite):
         # Pass the facing direction to the ShockWave
         shockwave = ShockWave(self.rect.centerx, self.rect.centery, self.facing)
         return shockwave, shockwave.damage
+
+    def find_nearest_zombie(self):
+        nearest = None
+        min_dist = float('inf')
+        for zombie in Game.instance.zombies:
+            dist = math.sqrt((zombie.rect.centerx - self.rect.centerx)**2 + 
+                           (zombie.rect.centery - self.rect.centery)**2)
+            if dist < min_dist:
+                min_dist = dist
+                nearest = zombie
+        return nearest
 
 
 #############################################
@@ -385,6 +413,11 @@ class Game:
     def __init__(self):
         Game.instance = self
         pygame.init()
+        pygame.display.set_caption("Dungeon Survivor")
+        
+        # Add with other sprite groups
+        self.unlock_messages = pygame.sprite.Group()
+
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.score = 0
@@ -416,6 +449,11 @@ class Game:
 
         # Add after other sprite groups
         self.xp_texts = pygame.sprite.Group()
+
+        # Add with other sprite groups
+        self.ice_blasts = pygame.sprite.Group()
+        self.ice_explosions = pygame.sprite.Group()
+        self.unlock_messages.update()
 
         for _ in range(10):
             zombie = Zombie.spawn_zombie(self.player)
@@ -654,6 +692,30 @@ class Game:
             for xp_text in self.xp_texts:
                 self.screen.blit(xp_text.surf, self.camera.apply(xp_text))
 
+            # Add with other sprite updates
+            self.ice_blasts.update()
+            self.ice_explosions.update()
+            
+            # Add collision checks for ice explosions
+            for explosion in self.ice_explosions:
+                for zombie in self.zombies:
+                    if math.sqrt((zombie.rect.centerx - explosion.center_x)**2 + 
+                               (zombie.rect.centery - explosion.center_y)**2) <= explosion.radius:
+                        zombie.take_damage(explosion.damage)
+            
+            # Add with other sprite drawing
+            for ice_blast in self.ice_blasts:
+                self.screen.blit(ice_blast.surf, self.camera.apply(ice_blast))
+            for ice_explosion in self.ice_explosions:
+                self.screen.blit(ice_explosion.surf, self.camera.apply(ice_explosion))
+
+            # Add with other sprite updates
+            self.unlock_messages.update()
+            
+            # Add with other sprite drawing
+            for msg in self.unlock_messages:
+                self.screen.blit(msg.surf, self.camera.apply(msg))
+
             pygame.display.flip()
             self.clock.tick(60)
 
@@ -760,6 +822,90 @@ class XPText(pygame.sprite.Sprite):
         self.rect.y += self.y_offset
         
         # Kill after lifetime
+        if pygame.time.get_ticks() - self.creation_time > self.lifetime:
+            self.kill()
+
+
+class IceBlast(pygame.sprite.Sprite):
+    def __init__(self, x, y, target):
+        super(IceBlast, self).__init__()
+        self.surf = pygame.Surface((20, 20), pygame.SRCALPHA)
+        pygame.draw.circle(self.surf, (0, 191, 255), (10, 10), 10)  # Light blue
+        pygame.draw.circle(self.surf, (135, 206, 250), (7, 7), 4)   # Highlight
+        self.rect = self.surf.get_rect(center=(x, y))
+        self.pos = pygame.math.Vector2(x, y)
+        self.target = target
+        self.speed = 10
+        self.has_hit = False
+        self.explosion_delay = 500  # 0.5 seconds
+        self.hit_time = 0
+        self.aoe_damage = 20
+        self.aoe_radius = 200
+
+    def update(self):
+        if not self.has_hit:
+            # Move towards target
+            target_pos = pygame.math.Vector2(self.target.rect.center)
+            direction = target_pos - self.pos
+            if direction.length() > 0:
+                direction = direction.normalize()
+                self.pos += direction * self.speed
+                self.rect.center = self.pos
+            
+            # Check if we've hit the target
+            if self.rect.colliderect(self.target.rect):
+                self.target.kill()  # Instant kill
+                self.has_hit = True
+                self.hit_time = pygame.time.get_ticks()
+        else:
+            # Check if it's time for AOE explosion
+            if pygame.time.get_ticks() - self.hit_time >= self.explosion_delay:
+                self.create_ice_explosion()
+                self.kill()
+
+    def create_ice_explosion(self):
+        explosion = IceExplosion(self.rect.centerx, self.rect.centery, self.aoe_damage, self.aoe_radius)
+        Game.instance.ice_explosions.add(explosion)
+
+
+class IceExplosion(pygame.sprite.Sprite):
+    def __init__(self, x, y, damage, radius):
+        super(IceExplosion, self).__init__()
+        self.center_x = x
+        self.center_y = y
+        self.radius = radius
+        self.damage = damage
+        self.surf = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
+        self.rect = self.surf.get_rect(center=(x, y))
+        self.creation_time = pygame.time.get_ticks()
+        self.lifetime = 500  # 0.5 seconds
+        
+    def update(self):
+        progress = (pygame.time.get_ticks() - self.creation_time) / self.lifetime
+        if progress >= 1:
+            self.kill()
+        else:
+            # Create new surface each update
+            self.surf = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
+            alpha = int(255 * (1 - progress))
+            pygame.draw.circle(
+                self.surf, 
+                (135, 206, 250, alpha), 
+                (self.radius, self.radius), 
+                self.radius
+            )
+
+
+class UnlockMessage(pygame.sprite.Sprite):
+    def __init__(self):
+        super(UnlockMessage, self).__init__()
+        self.font = pygame.font.Font(None, 48)
+        self.surf = self.font.render("Ice Blast Unlocked!", True, (0, 191, 255))
+        self.rect = self.surf.get_rect(center=(MAP_WIDTH//2, MAP_HEIGHT//2))
+        self.creation_time = pygame.time.get_ticks()
+        self.lifetime = 2000  # 2 seconds
+        
+    def update(self):
         if pygame.time.get_ticks() - self.creation_time > self.lifetime:
             self.kill()
 
