@@ -52,6 +52,9 @@ class Player(pygame.sprite.Sprite):
         self.ice_blast_unlocked = False
         self.ice_blast_delay = 5000  # 5 seconds between casts
         self.last_ice_blast = 0
+        self.bomb_unlocked = False
+        self.bomb_delay = 2000  # 2 seconds between bombs
+        self.last_bomb = 0
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -112,6 +115,12 @@ class Player(pygame.sprite.Sprite):
             self.ice_blast_unlocked = True
             unlock_msg = UnlockMessage()
             Game.instance.unlock_messages.add(unlock_msg)
+
+        # Check if player has enough XP to unlock Bomb
+        if self.xp >= 500 and not self.bomb_unlocked:
+            self.bomb_unlocked = True
+            unlock_msg = UnlockMessage()
+            Game.instance.unlock_messages.add(unlock_msg)
         
         # Handle Ice Blast casting
         if self.ice_blast_unlocked and current_time - self.last_ice_blast >= self.ice_blast_delay:
@@ -120,6 +129,11 @@ class Player(pygame.sprite.Sprite):
                 ice_blast = IceBlast(self.rect.centerx, self.rect.centery, nearest_zombie)
                 Game.instance.ice_blasts.add(ice_blast)
                 self.last_ice_blast = current_time
+
+        # Handle Bomb creation
+        if self.bomb_unlocked and current_time - self.last_bomb >= self.bomb_delay:
+            self.create_bomb(self.rect.centerx, self.rect.centery)
+            self.last_bomb = current_time
 
         return None
 
@@ -917,6 +931,20 @@ class UnlockMessage(pygame.sprite.Sprite):
         super(UnlockMessage, self).__init__()
         self.font = pygame.font.Font(None, 48)
         self.surf = self.font.render("Ice Blast Unlocked!", True, (0, 191, 255))
+        self.rect = self.surf.get_rect(center=(MAP_WIDTH//2, MAP_HEIGHT//2))
+        self.creation_time = pygame.time.get_ticks()
+        self.lifetime = 2000  # 2 seconds
+        
+    def update(self):
+        if pygame.time.get_ticks() - self.creation_time > self.lifetime:
+            self.kill()
+
+
+class BombUnlockMessage(pygame.sprite.Sprite):
+    def __init__(self):
+        super(BombUnlockMessage, self).__init__()
+        self.font = pygame.font.Font(None, 48)
+        self.surf = self.font.render("Bomb Unlocked!", True, (255, 140, 0))  # Orange text
         self.rect = self.surf.get_rect(center=(MAP_WIDTH//2, MAP_HEIGHT//2))
         self.creation_time = pygame.time.get_ticks()
         self.lifetime = 2000  # 2 seconds
