@@ -119,7 +119,7 @@ class Player(pygame.sprite.Sprite):
         # Check if player has enough XP to unlock Bomb
         if self.xp >= 500 and not self.bomb_unlocked:
             self.bomb_unlocked = True
-            unlock_msg = UnlockMessage()
+            unlock_msg = BombUnlockMessage()
             Game.instance.unlock_messages.add(unlock_msg)
         
         # Handle Ice Blast casting
