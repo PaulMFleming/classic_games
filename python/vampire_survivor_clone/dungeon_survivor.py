@@ -60,15 +60,23 @@ class Player(pygame.sprite.Sprite):
         
     def level_up(self):
         self.level += 1
-        # Apply fireball upgrades every few levels
-        if self.level % 2 == 0:  # Every 2 levels
-            self.fireball_damage += 10
-        if self.level % 3 == 0:  # Every 3 levels
-            self.shot_delay = max(200, self.shot_delay - 50)  # Faster shooting, minimum 200ms
-        if self.level % 4 == 0:  # Every 4 levels
-            self.fireball_pierce += 1
-        if self.level % 5 == 0:  # Every 5 levels
-            self.fireball_size += 0.2
+        
+        # Increase fireball damage
+        self.fireball_damage += 5
+
+        # Decrease shockwave interval (increase frequency)
+        self.shockwave_interval = max(1500, int(self.shockwave_interval * 0.9))
+        
+        # Decrease shot delay (increase speed) by 10% each level
+        self.shot_delay = max(200, int(self.shot_delay * 0.9))
+        
+        # If ice blast is unlocked, increase its speed too
+        if self.ice_blast_unlocked:
+            self.ice_blast_delay = max(1000, int(self.ice_blast_delay * 0.9))
+        
+        # Create level up message
+        level_msg = LevelUpMessage(self.level)
+        Game.instance.unlock_messages.add(level_msg)
 
     def input(self):
         keys = pygame.key.get_pressed()
