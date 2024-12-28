@@ -453,12 +453,16 @@ class PowerUp(pygame.sprite.Sprite):
         
         if power_type == "fireball":
             # Red orb for speed boost
-            pygame.draw.circle(self.surf, (255, 0, 0), (15, 15), 15)  # Main red circle
-            pygame.draw.circle(self.surf, (255, 200, 200), (10, 10), 5)  # Highlight
+            pygame.draw.circle(self.surf, (255, 0, 0), (15, 15), 15)
+            pygame.draw.circle(self.surf, (255, 200, 200), (10, 10), 5)
         elif power_type == "health":
             # Green orb for health boost
-            pygame.draw.circle(self.surf, (0, 255, 0), (15, 15), 15)  # Main green circle
-            pygame.draw.circle(self.surf, (200, 255, 200), (10, 10), 5)  # Highlight
+            pygame.draw.circle(self.surf, (0, 255, 0), (15, 15), 15)
+            pygame.draw.circle(self.surf, (200, 255, 200), (10, 10), 5)
+        elif power_type == "thanos":
+            # Purple orb for Thanos snap
+            pygame.draw.circle(self.surf, (147, 0, 211), (15, 15), 15)  # Purple
+            pygame.draw.circle(self.surf, (218, 112, 214), (10, 10), 5)  # Light purple highlight
         
         self.rect = self.surf.get_rect(center=(x, y))
         self.creation_time = pygame.time.get_ticks()
@@ -763,12 +767,16 @@ class Game:
             # Check for power-up collection
             power_up_collision = pygame.sprite.spritecollideany(self.player, self.power_ups)
             if power_up_collision:
-                if power_up_collision.power_type == "speed":
+                if power_up_collision.power_type == "fireball":
                     self.player.shot_delay = max(300, self.player.shot_delay - 300)
-                    print(f"Speed power-up collected! Shot delay decreased to {self.player.shot_delay}ms")
                 elif power_up_collision.power_type == "health":
                     self.player.health = min(100, self.player.health + 15)  # Cap at 100 health
-                    print(f"Health power-up collected! Health increased to {self.player.health}")
+                elif power_up_collision.power_type == "thanos":
+                    # Get all zombies and randomly eliminate half
+                    zombie_list = list(self.zombies)
+                    zombies_to_remove = random.sample(zombie_list, len(zombie_list) // 2)
+                    for zombie in zombies_to_remove:
+                        zombie.take_damage(999)  # Instant kill
                 power_up_collision.kill()
 
             # Add after other sprite updates
