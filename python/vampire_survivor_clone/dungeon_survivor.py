@@ -853,10 +853,15 @@ class ShockWave(pygame.sprite.Sprite):
 
 
 class XPText(pygame.sprite.Sprite):
+    # Create a class-level font that will be shared by all instances
+    font = None
+    
     def __init__(self, x, y):
         super(XPText, self).__init__()
-        self.font = pygame.font.Font(None, 24)
-        self.surf = self.font.render("+5 XP", True, (0, 255, 0))  # Green text
+        # Initialize the shared font if it hasn't been created yet
+        if XPText.font is None:
+            XPText.font = pygame.font.Font(None, 24)
+        self.surf = XPText.font.render("+5 XP", True, (0, 255, 0))  # Green text
         self.rect = self.surf.get_rect(center=(x, y))
         self.creation_time = pygame.time.get_ticks()
         self.lifetime = 1000  # 1 second
