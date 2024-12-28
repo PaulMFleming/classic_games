@@ -186,9 +186,33 @@ class Zombie(pygame.sprite.Sprite):
         
         # Debug font
         self.debug_font = pygame.font.Font(None, 20)
+        
+        self.knockback_velocity = pygame.math.Vector2(0, 0)
+        self.knockback_friction = 0.92  # Reduces velocity each frame
+        self.is_being_knocked = False
 
     def update(self):
         current_time = pygame.time.get_ticks()
+        
+        # Handle knockback movement first
+        if self.is_being_knocked:
+            # Apply knockback velocity
+            self.rect.x += self.knockback_velocity.x
+            self.rect.y += self.knockback_velocity.y
+            self.pos.x = self.rect.x
+            self.pos.y = self.rect.y
+            
+            # Apply friction to slow down
+            self.knockback_velocity *= self.knockback_friction
+            
+            # Stop knockback when velocity is very small
+            if self.knockback_velocity.length() < 0.1:
+                self.is_being_knocked = False
+                self.knockback_velocity.x = 0
+                self.knockback_velocity.y = 0
+            
+            # Don't do normal movement while being knocked back
+            return
         
         # Handle bounce animation
         if self.is_scaling:
@@ -218,7 +242,7 @@ class Zombie(pygame.sprite.Sprite):
                 # Toggle visibility based on flash interval
                 self.visible = ((current_time - self.death_start_time) // self.flash_interval) % 2 == 0
         
-        # Move towards player
+        # Only move towards player if not being knocked back
         if self.rect.x < self.player.rect.x:
             self.rect.x += self.speed
         if self.rect.x > self.player.rect.x:
@@ -535,26 +559,19 @@ class Game:
                         zombie.take_damage(shockwave.damage)
                         zombie.start_bounce_animation()  # Start bounce animation
                         
-                        # Calculate knockback direction based on shockwave's center with random angle
-                        knockback_distance = 350
+                        # Calculate knockback direction with random angle
+                        knockback_speed = 25  # Initial speed of knockback
                         base_angle = math.atan2(
                             zombie.rect.centery - shockwave.center_y,
                             zombie.rect.centerx - shockwave.center_x
                         )
-                        # Add random angle variation (-30 to +30 degrees)
                         random_angle = math.radians(random.uniform(-30, 30))
                         final_angle = base_angle + random_angle
                         
-                        # Calculate new direction with random angle
-                        dx = math.cos(final_angle) * knockback_distance
-                        dy = math.sin(final_angle) * knockback_distance
-                        
-                        # Apply knockback
-                        zombie.rect.x += dx
-                        zombie.rect.y += dy
-                        # Update the zombie's position vector too
-                        zombie.pos.x = zombie.rect.x
-                        zombie.pos.y = zombie.rect.y
+                        # Set knockback velocity
+                        zombie.knockback_velocity.x = math.cos(final_angle) * knockback_speed
+                        zombie.knockback_velocity.y = math.sin(final_angle) * knockback_speed
+                        zombie.is_being_knocked = True
 
             # Handle zombie spawning
             current_time = pygame.time.get_ticks()
