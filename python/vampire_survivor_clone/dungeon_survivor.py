@@ -154,6 +154,10 @@ class Player(pygame.sprite.Sprite):
                 nearest = zombie
         return nearest
 
+    def create_bomb(self, x, y):
+        bomb = Bomb(x, y)
+        Game.instance.bombs.add(bomb)
+
 
 #############################################
 ## Enemies ##
@@ -454,6 +458,8 @@ class Game:
         self.ice_blasts = pygame.sprite.Group()
         self.ice_explosions = pygame.sprite.Group()
         self.unlock_messages.update()
+        self.bombs = pygame.sprite.Group()
+        self.bomb_explosions = pygame.sprite.Group()
 
         for _ in range(10):
             zombie = Zombie.spawn_zombie(self.player)
@@ -544,6 +550,8 @@ class Game:
             self.zombies.update()
             self.fireballs.update()
             self.shockwaves.update()
+            self.bombs.update()
+            self.bomb_explosions.update()
 
             self.camera.update(self.player)
 
@@ -715,6 +723,14 @@ class Game:
             # Add with other sprite drawing
             for msg in self.unlock_messages:
                 self.screen.blit(msg.surf, self.camera.apply(msg))
+
+            self.bombs.update()
+            self.bomb_explosions.update()
+            
+            for bomb in self.bombs:
+                self.screen.blit(bomb.surf, self.camera.apply(bomb))
+            for explosion in self.bomb_explosions:
+                self.screen.blit(explosion.surf, self.camera.apply(explosion))
 
             pygame.display.flip()
             self.clock.tick(60)
