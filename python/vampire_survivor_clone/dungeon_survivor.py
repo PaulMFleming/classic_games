@@ -479,28 +479,40 @@ class Game:
             zombie = Zombie.spawn_zombie(self.player)
             self.zombies.add(zombie)
 
+        # Add after other game properties
+        self.game_start_time = pygame.time.get_ticks()
+        self.base_zombie_speed = 2
+        self.base_spawn_delay = 2000  # Initial spawn delay (2 seconds)
+        self.min_spawn_delay = 500    # Fastest spawn rate (0.5 seconds)
+        self.speed_increase_rate = 0.1  # How much to increase speed every minute
+        self.last_zombie_spawn = pygame.time.get_ticks()
+        
+    def get_current_difficulty(self):
+        # Calculate minutes elapsed
+        minutes_elapsed = (pygame.time.get_ticks() - self.game_start_time) / 60000
+        # Increase speed by 10% every minute, cap at 3x original speed
+        speed_multiplier = min(3.0, 1.0 + (minutes_elapsed * self.speed_increase_rate))
+        return speed_multiplier
+        
     def spawn_zombie(self):
-        # Don't spawn if at max zombies
-        if len(self.zombies) >= self.max_zombies:
-            return
-
-        # Spawn from random edge of the map
-        side = random.randint(0, 3)
-        if side == 0:  # Top
-            x = random.randint(0, MAP_WIDTH)
-            y = 0
-        elif side == 1:  # Right
-            x = MAP_WIDTH
-            y = random.randint(0, MAP_HEIGHT)
-        elif side == 2:  # Bottom
-            x = random.randint(0, MAP_WIDTH)
-            y = MAP_HEIGHT
-        else:  # Left
-            x = 0
-            y = random.randint(0, MAP_HEIGHT)
-
-        zombie = Zombie(x, y, self.player)
-        self.zombies.add(zombie)
+        # Spawn multiple zombies each cycle
+        num_zombies = random.randint(3, 5)  # Spawn 3-5 zombies at once
+        
+        for _ in range(num_zombies):
+            # Spawn away from player
+            while True:
+                x = random.randint(100, MAP_WIDTH - 100)
+                y = random.randint(100, MAP_HEIGHT - 100)
+                # Check distance from player
+                dx = x - self.player.rect.centerx
+                dy = y - self.player.rect.centery
+                distance = math.sqrt(dx * dx + dy * dy)
+                if distance > 200:  # At least 200 pixels from player
+                    break
+            
+            zombie = Zombie.spawn_zombie(self.player)
+            zombie.speed = self.base_zombie_speed * self.get_current_difficulty()
+            self.zombies.add(zombie)
 
     def show_game_over_screen(self):
         game_over = True
@@ -602,8 +614,13 @@ class Game:
                 self.screen.blit(shockwave.surf, self.camera.apply(shockwave))
 
             # Draw health and score
+            speed_multiplier = self.get_current_difficulty()
+            minutes_elapsed = (pygame.time.get_ticks() - self.game_start_time) / 60000
+            
             debug_text = self.debug_font.render(
-                f"Score: {self.player.score} | Health: {self.player.health} | Level: {self.player.level} | XP: {self.player.xp}", 
+                f"Score: {self.player.score} | Health: {self.player.health} | " +
+                f"Level: {self.player.level} | XP: {self.player.xp} | " +
+                f"Difficulty: {speed_multiplier:.1f}x | Time: {int(minutes_elapsed)}m",
                 True, (255, 255, 255)
             )
             self.screen.blit(debug_text, (10, 10))
@@ -952,6 +969,45 @@ class BombUnlockMessage(pygame.sprite.Sprite):
     def update(self):
         if pygame.time.get_ticks() - self.creation_time > self.lifetime:
             self.kill()
+
+
+class Bomb(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super(Bomb, self).__init__()
+        self.surf = pygame.Surface((20, 20), pygame.SRCALPHA)
+        pygame.draw.circle(self.surf, (139, 69, 19), (10, 10), 10)  # Brown circle
+        pygame.draw.circle(self.surf, (205, 133, 63), (7, 7), 4)    # Lighter brown highlight
+        self.rect = self.surf.get_rect(center=(x, y))
+        self.pos = pygame.math.Vector2(x, y)
+        self.speed = 5
+        self.distance_traveled = 0
+        self.max_distance = 200
+        self.explosion_radius = 150
+        self.damage = 15
+
+    def update(self):
+        # Move downward
+        self.pos.y += self.speed
+        self.rect.center = self.pos
+        self.distance_traveled += self.speed
+
+        # Explode when max distance reached
+        if self.distance_traveled >= self.max_distance:
+            self.create_explosion()
+            self.kill()
+
+    def create_explosion(self):
+        # Damage all zombies within radius
+        for zombie in Game.instance.zombies:
+            dx = zombie.rect.centerx - self.rect.centerx
+            dy = zombie.rect.centery - self.rect.centery
+            distance = math.sqrt(dx * dx + dy * dy)
+            if distance <= self.explosion_radius:
+                zombie.take_damage(self.damage)
+                
+        # Create visual explosion
+        explosion = BombExplosion(self.rect.centerx, self.rect.centery, self.explosion_radius)
+        Game.instance.bomb_explosions.add(explosion)
 
 
 if __name__ == "__main__":
