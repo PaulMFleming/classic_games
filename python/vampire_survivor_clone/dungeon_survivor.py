@@ -340,7 +340,7 @@ class Zombie(pygame.sprite.Sprite):
             self.is_dying = True
             self.death_start_time = pygame.time.get_ticks()
             self.player.score += 1  # Increment score when zombie dies
-            self.player.xp += 5
+            self.player.xp += 15  # Increased from 5 to 15
 
             # Create floating XP text
             xp_text = XPText(self.rect.centerx, self.rect.top)
@@ -499,7 +499,9 @@ class Game:
         self.shockwaves = pygame.sprite.Group()
         self.power_ups = pygame.sprite.Group()  # Add power-ups group
         self.last_power_up_spawn = pygame.time.get_ticks()
-        self.power_up_spawn_delay = 4000  # X seconds between power-ups
+        self.power_up_spawn_delay = 4000  # Start with 4 seconds between spawns
+        self.min_power_up_delay = 1500    # Minimum 1.5 seconds between spawns
+        self.power_up_delay_decrease = 50  # Decrease by 50ms each spawn
 
         # Add spawn control variables
         self.zombie_spawn_delay = 2000  # Start with 2 seconds between spawns
@@ -829,6 +831,13 @@ class Game:
         self.power_ups.add(power_up)
         print(f"{power_type} power-up spawned at ({x}, {y})")  # Debug message
 
+        # Decrease spawn delay
+        if self.power_up_spawn_delay > self.min_power_up_delay:
+            self.power_up_spawn_delay = max(
+                self.min_power_up_delay,
+                self.power_up_spawn_delay - self.power_up_delay_decrease
+            )
+
 
 class ShockWave(pygame.sprite.Sprite):
     def __init__(self, x, y, player_facing):
@@ -896,18 +905,16 @@ class ShockWave(pygame.sprite.Sprite):
 
 
 class XPText(pygame.sprite.Sprite):
-    # Create a class-level font that will be shared by all instances
     font = None
     
     def __init__(self, x, y):
         super(XPText, self).__init__()
-        # Initialize the shared font if it hasn't been created yet
         if XPText.font is None:
             XPText.font = pygame.font.Font(None, 24)
-        self.surf = XPText.font.render("+5 XP", True, (0, 255, 0))  # Green text
+        self.surf = XPText.font.render("+15 XP", True, (0, 255, 0))  # Increased from 5 to 15
         self.rect = self.surf.get_rect(center=(x, y))
         self.creation_time = pygame.time.get_ticks()
-        self.lifetime = 1000  # 1 second
+        self.lifetime = 1000
         self.float_speed = 1
         self.y_offset = 0
         
