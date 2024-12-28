@@ -244,6 +244,12 @@ class Zombie(pygame.sprite.Sprite):
             self.is_dying = True
             self.death_start_time = pygame.time.get_ticks()
             self.player.score += 1  # Increment score when zombie dies
+            self.player.xp += 5
+
+            # Create floating XP text
+            xp_text = XPText(self.rect.centerx, self.rect.top)
+            Game.instance.xp_texts.add(xp_text)
+            self.kill()
 
     def start_bounce_animation(self):
         if not self.is_scaling:
@@ -344,7 +350,10 @@ class PowerUp(pygame.sprite.Sprite):
             self.kill()
 
 class Game:
+    instance = None
+    
     def __init__(self):
+        Game.instance = self
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
@@ -374,6 +383,9 @@ class Game:
         self.min_spawn_delay = 500  # Fastest spawn rate (milliseconds)
         self.difficulty_increase_rate = 50  # How much to decrease delay
         self.max_zombies = 150  # Maximum zombies allowed at once
+
+        # Add after other sprite groups
+        self.xp_texts = pygame.sprite.Group()
 
         for _ in range(10):
             zombie = Zombie.spawn_zombie(self.player)
@@ -501,7 +513,7 @@ class Game:
 
             # Draw health and score
             debug_text = self.debug_font.render(
-                f"Score: {self.player.score} | Health: {self.player.health} | Level: {self.player.level} | XP: {self.player.xp}/{self.player.xp_to_level}", 
+                f"Score: {self.player.score} | Health: {self.player.health} | Level: {self.player.level} | XP: {self.player.xp}", 
                 True, (255, 255, 255)
             )
             self.screen.blit(debug_text, (10, 10))
@@ -607,6 +619,11 @@ class Game:
                 print(f"Power-up collected! Shot delay decreased to {self.player.shot_delay}ms")  # Debug message
                 power_up_collision.kill()
 
+            # Add after other sprite updates
+            self.xp_texts.update()
+            for xp_text in self.xp_texts:
+                self.screen.blit(xp_text.surf, self.camera.apply(xp_text))
+
             pygame.display.flip()
             self.clock.tick(60)
 
@@ -692,6 +709,27 @@ class ShockWave(pygame.sprite.Sprite):
         return (distance <= self.radius and 
                 distance >= self.radius - max(1, int(self.radius / 3)) and 
                 relative_angle <= self.arc_angle)
+
+
+class XPText(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super(XPText, self).__init__()
+        self.font = pygame.font.Font(None, 24)
+        self.surf = self.font.render("+5 XP", True, (0, 255, 0))  # Green text
+        self.rect = self.surf.get_rect(center=(x, y))
+        self.creation_time = pygame.time.get_ticks()
+        self.lifetime = 1000  # 1 second
+        self.float_speed = 1
+        self.y_offset = 0
+        
+    def update(self):
+        # Float upward
+        self.y_offset -= self.float_speed
+        self.rect.y += self.y_offset
+        
+        # Kill after lifetime
+        if pygame.time.get_ticks() - self.creation_time > self.lifetime:
+            self.kill()
 
 
 if __name__ == "__main__":
