@@ -536,6 +536,8 @@ class Game:
         self.speed_increase_rate = 0.1  # How much to increase speed every minute
         self.last_zombie_spawn = pygame.time.get_ticks()
         
+        self.power_up_texts = pygame.sprite.Group()
+        
     def get_current_difficulty(self):
         # Calculate minutes elapsed
         minutes_elapsed = (pygame.time.get_ticks() - self.game_start_time) / 60000
@@ -768,7 +770,13 @@ class Game:
             power_up_collision = pygame.sprite.spritecollideany(self.player, self.power_ups)
             if power_up_collision:
                 if power_up_collision.power_type == "fireball":
-                    self.player.shot_delay = max(300, self.player.shot_delay - 300)
+                    # Increase damage and reduce shot delay
+                    self.player.fireball_damage += 5
+                    self.player.shot_delay = max(200, self.player.shot_delay - 100)
+                    # Show floating text to indicate power-up effect
+                    power_text = PowerUpText(self.player.rect.centerx, self.player.rect.top, 
+                                           "Fireball +5 DMG!")
+                    self.power_up_texts.add(power_text)
                 elif power_up_collision.power_type == "health":
                     self.player.health = min(100, self.player.health + 15)  # Cap at 100 health
                 elif power_up_collision.power_type == "thanos":
@@ -1111,6 +1119,30 @@ class LevelUpMessage(pygame.sprite.Sprite):
         self.lifetime = 2000  # 2 seconds
         
     def update(self):
+        if pygame.time.get_ticks() - self.creation_time > self.lifetime:
+            self.kill()
+
+
+class PowerUpText(pygame.sprite.Sprite):
+    font = None
+    
+    def __init__(self, x, y, message):
+        super(PowerUpText, self).__init__()
+        if PowerUpText.font is None:
+            PowerUpText.font = pygame.font.Font(None, 36)
+        self.surf = PowerUpText.font.render(message, True, (255, 215, 0))  # Gold text
+        self.rect = self.surf.get_rect(center=(x, y))
+        self.creation_time = pygame.time.get_ticks()
+        self.lifetime = 1000  # 1 second
+        self.float_speed = 1
+        self.y_offset = 0
+        
+    def update(self):
+        # Float upward
+        self.y_offset -= self.float_speed
+        self.rect.y += self.y_offset
+        
+        # Kill after lifetime
         if pygame.time.get_ticks() - self.creation_time > self.lifetime:
             self.kill()
 
