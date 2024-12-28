@@ -46,8 +46,8 @@ class Player(pygame.sprite.Sprite):
         self.shot_delay = self.base_shot_delay
         self.xp = 0
         self.level = 1
-        self.xp_to_level = 50
-        self.base_fireball_damage = 10
+        self.xp_to_level = 200
+        self.base_fireball_damage = 20  # Increased from 10
         self.fireball_damage = self.base_fireball_damage
         self.ice_blast_unlocked = False
         self.ice_blast_delay = 5000  # 5 seconds between casts
@@ -55,6 +55,20 @@ class Player(pygame.sprite.Sprite):
         self.bomb_unlocked = False
         self.bomb_delay = 2000  # 2 seconds between bombs
         self.last_bomb = 0
+        self.fireball_pierce = 1  # Number of enemies a fireball can hit
+        self.fireball_size = 1.0  # Scale factor for fireball size
+        
+    def level_up(self):
+        self.level += 1
+        # Apply fireball upgrades every few levels
+        if self.level % 2 == 0:  # Every 2 levels
+            self.fireball_damage += 10
+        if self.level % 3 == 0:  # Every 3 levels
+            self.shot_delay = max(200, self.shot_delay - 50)  # Faster shooting, minimum 200ms
+        if self.level % 4 == 0:  # Every 4 levels
+            self.fireball_pierce += 1
+        if self.level % 5 == 0:  # Every 5 levels
+            self.fireball_size += 0.2
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -87,6 +101,16 @@ class Player(pygame.sprite.Sprite):
         old_facing = self.facing
         
         self.input()  # Get input first
+        
+        # Check for level up
+        if self.xp >= self.xp_to_level:
+            self.level_up()
+            self.xp -= self.xp_to_level
+            self.xp_to_level = int(self.xp_to_level * 1.5)  # Increase XP needed for next level
+            
+            # Create level up message
+            level_msg = LevelUpMessage(self.level)
+            Game.instance.unlock_messages.add(level_msg)
         
         # Only flip if direction changed
         if old_facing != self.facing:
@@ -344,21 +368,38 @@ class Zombie(pygame.sprite.Sprite):
 #############################################
 ## Weapons ##
 class Fireball(pygame.sprite.Sprite):
-    def __init__(self, x, y, direction, damage):
+    def __init__(self, x, y, direction, damage, pierce=1, size=1.0):
         super(Fireball, self).__init__()
-        self.surf = pygame.image.load("images/fireball.png")
-        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
+        # Load and scale the base surface
+        self.base_surf = pygame.image.load("images/fireball.png")
+        self.base_surf.set_colorkey((0, 0, 0), RLEACCEL)
+        
+        # Scale the surface based on size parameter
+        new_width = int(self.base_surf.get_width() * size)
+        new_height = int(self.base_surf.get_height() * size)
+        self.surf = pygame.transform.scale(self.base_surf, (new_width, new_height))
+        
         self.rect = self.surf.get_rect(center=(x, y))
         self.direction = direction
         self.speed = 10
         self.damage = damage
+        self.pierce = pierce  # Number of enemies it can hit before disappearing
+        self.enemies_hit = []  # Track which enemies have been hit
 
     def update(self):
-        # Move in the fixed direction
         self.rect.x += self.direction.x * self.speed
         self.rect.y += self.direction.y * self.speed
         
-        # Remove fireball when it leaves the screen
+        # Check collisions with zombies
+        for zombie in Game.instance.zombies:
+            if zombie not in self.enemies_hit and self.rect.colliderect(zombie.rect):
+                zombie.take_damage(self.damage)
+                self.enemies_hit.append(zombie)
+                if len(self.enemies_hit) >= self.pierce:
+                    self.kill()
+                    break
+        
+        # Remove if off screen
         if self.rect.right < 0 or self.rect.left > MAP_WIDTH:
             self.kill()
         if self.rect.top < 0 or self.rect.bottom > MAP_HEIGHT:
@@ -1043,6 +1084,20 @@ class BombExplosion(pygame.sprite.Sprite):
                 (self.radius, self.radius), 
                 self.radius
             )
+
+
+class LevelUpMessage(pygame.sprite.Sprite):
+    def __init__(self, level):
+        super(LevelUpMessage, self).__init__()
+        self.font = pygame.font.Font(None, 48)
+        self.surf = self.font.render(f"Level {level}!", True, (255, 215, 0))  # Gold color
+        self.rect = self.surf.get_rect(center=(MAP_WIDTH//2, MAP_HEIGHT//2))
+        self.creation_time = pygame.time.get_ticks()
+        self.lifetime = 2000  # 2 seconds
+        
+    def update(self):
+        if pygame.time.get_ticks() - self.creation_time > self.lifetime:
+            self.kill()
 
 
 if __name__ == "__main__":
