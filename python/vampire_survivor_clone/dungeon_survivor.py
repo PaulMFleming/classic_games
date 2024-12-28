@@ -42,7 +42,7 @@ class Player(pygame.sprite.Sprite):
         self.shockwave_interval = 3000
         self.last_shockwave = 0
         self.fireball_damage = 10  # Changed base damage to 10
-        self.base_shot_delay = 500
+        self.base_shot_delay = 400
         self.shot_delay = self.base_shot_delay
         self.xp = 0
         self.level = 1
