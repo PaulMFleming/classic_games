@@ -357,13 +357,19 @@ def write_high_score(score):
         json.dump({"high_score": score}, file)
 
 class PowerUp(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, power_type="fireball"):
         super(PowerUp, self).__init__()
         self.surf = pygame.Surface((30, 30), pygame.SRCALPHA)
+        self.power_type = power_type
         
-        # Draw red orb with glow effect
-        pygame.draw.circle(self.surf, (255, 0, 0), (15, 15), 15)  # Main red circle
-        pygame.draw.circle(self.surf, (255, 200, 200), (10, 10), 5)  # Highlight
+        if power_type == "fireball":
+            # Red orb for speed boost
+            pygame.draw.circle(self.surf, (255, 0, 0), (15, 15), 15)  # Main red circle
+            pygame.draw.circle(self.surf, (255, 200, 200), (10, 10), 5)  # Highlight
+        elif power_type == "health":
+            # Green orb for health boost
+            pygame.draw.circle(self.surf, (0, 255, 0), (15, 15), 15)  # Main green circle
+            pygame.draw.circle(self.surf, (200, 255, 200), (10, 10), 5)  # Highlight
         
         self.rect = self.surf.get_rect(center=(x, y))
         self.creation_time = pygame.time.get_ticks()
@@ -399,7 +405,7 @@ class Game:
         self.shockwaves = pygame.sprite.Group()
         self.power_ups = pygame.sprite.Group()  # Add power-ups group
         self.last_power_up_spawn = pygame.time.get_ticks()
-        self.power_up_spawn_delay = 15000  # 15 seconds between power-ups
+        self.power_up_spawn_delay = 4000  # X seconds between power-ups
 
         # Add spawn control variables
         self.zombie_spawn_delay = 2000  # Start with 2 seconds between spawns
@@ -635,8 +641,12 @@ class Game:
             # Check for power-up collection
             power_up_collision = pygame.sprite.spritecollideany(self.player, self.power_ups)
             if power_up_collision:
-                self.player.shot_delay = max(300, self.player.shot_delay - 300)  # Decrease delay by 300ms, min 300ms
-                print(f"Power-up collected! Shot delay decreased to {self.player.shot_delay}ms")  # Debug message
+                if power_up_collision.power_type == "speed":
+                    self.player.shot_delay = max(300, self.player.shot_delay - 300)
+                    print(f"Speed power-up collected! Shot delay decreased to {self.player.shot_delay}ms")
+                elif power_up_collision.power_type == "health":
+                    self.player.health = min(100, self.player.health + 15)  # Cap at 100 health
+                    print(f"Health power-up collected! Health increased to {self.player.health}")
                 power_up_collision.kill()
 
             # Add after other sprite updates
@@ -661,9 +671,11 @@ class Game:
             if distance > 200:  # At least 200 pixels from player
                 break
         
-        power_up = PowerUp(x, y)
+        # Randomly choose power-up type
+        power_type = random.choice(["fireball", "health"])
+        power_up = PowerUp(x, y, power_type)
         self.power_ups.add(power_up)
-        print(f"Power-up spawned at ({x}, {y})")  # Debug message
+        print(f"{power_type} power-up spawned at ({x}, {y})")  # Debug message
 
 
 class ShockWave(pygame.sprite.Sprite):
