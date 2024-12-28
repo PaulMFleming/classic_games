@@ -503,7 +503,7 @@ class Game:
         self.shockwaves = pygame.sprite.Group()
         self.power_ups = pygame.sprite.Group()  # Add power-ups group
         self.last_power_up_spawn = pygame.time.get_ticks()
-        self.power_up_spawn_delay = 4000  # Start with 4 seconds between spawns
+        self.power_up_spawn_delay = 2000  # Start with X seconds between spawns
         self.min_power_up_delay = 1500    # Minimum 1.5 seconds between spawns
         self.power_up_delay_decrease = 50  # Decrease by 50ms each spawn
 
@@ -830,7 +830,7 @@ class Game:
             dx = x - self.player.rect.centerx
             dy = y - self.player.rect.centery
             distance = math.sqrt(dx * dx + dy * dy)
-            if distance > 200:  # At least 200 pixels from player
+            if distance > 100:  # At least 200 pixels from player
                 break
         
         # Randomly choose power-up type
