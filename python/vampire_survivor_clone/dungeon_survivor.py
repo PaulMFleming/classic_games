@@ -535,16 +535,19 @@ class Game:
                         zombie.take_damage(shockwave.damage)
                         zombie.start_bounce_animation()  # Start bounce animation
                         
-                        # Calculate knockback direction based on shockwave's center
-                        knockback_distance = 150
-                        dx = zombie.rect.centerx - shockwave.center_x
-                        dy = zombie.rect.centery - shockwave.center_y
+                        # Calculate knockback direction based on shockwave's center with random angle
+                        knockback_distance = 350
+                        base_angle = math.atan2(
+                            zombie.rect.centery - shockwave.center_y,
+                            zombie.rect.centerx - shockwave.center_x
+                        )
+                        # Add random angle variation (-30 to +30 degrees)
+                        random_angle = math.radians(random.uniform(-30, 30))
+                        final_angle = base_angle + random_angle
                         
-                        # Normalize the direction
-                        length = math.sqrt(dx * dx + dy * dy)
-                        if length > 0:  # Avoid division by zero
-                            dx = (dx / length) * knockback_distance
-                            dy = (dy / length) * knockback_distance
+                        # Calculate new direction with random angle
+                        dx = math.cos(final_angle) * knockback_distance
+                        dy = math.sin(final_angle) * knockback_distance
                         
                         # Apply knockback
                         zombie.rect.x += dx
@@ -661,9 +664,9 @@ class ShockWave(pygame.sprite.Sprite):
         
         # Set start_angle based on player facing direction
         if player_facing == "right":
-            self.start_angle = -60
-        else:  # facing left
             self.start_angle = 120
+        else:  # facing left
+            self.start_angle = -60
         
         # Make surface bigger to accommodate larger radius
         self.surf = pygame.Surface((self.max_radius * 2, self.max_radius * 2), pygame.SRCALPHA)
