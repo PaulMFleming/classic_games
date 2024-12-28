@@ -1010,6 +1010,34 @@ class Bomb(pygame.sprite.Sprite):
         Game.instance.bomb_explosions.add(explosion)
 
 
+class BombExplosion(pygame.sprite.Sprite):
+    def __init__(self, x, y, radius):
+        super(BombExplosion, self).__init__()
+        self.center_x = x
+        self.center_y = y
+        self.radius = radius
+        self.damage = 30
+        self.surf = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
+        self.rect = self.surf.get_rect(center=(x, y))
+        self.creation_time = pygame.time.get_ticks()
+        self.lifetime = 500  # 0.5 seconds
+        
+    def update(self):
+        progress = (pygame.time.get_ticks() - self.creation_time) / self.lifetime
+        if progress >= 1:
+            self.kill()
+        else:
+            # Create new surface each update
+            self.surf = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
+            alpha = int(255 * (1 - progress))
+            pygame.draw.circle(
+                self.surf, 
+                (255, 140, 0, alpha),  # Orange color with alpha
+                (self.radius, self.radius), 
+                self.radius
+            )
+
+
 if __name__ == "__main__":
     game = Game()
     game.run()
