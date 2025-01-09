@@ -9,6 +9,6 @@
 - Alter object properties via script
 - Build UIs
 - Work with physics
-Construct loops for repeated code
-Add collision detection
+- Construct loops for repeated code
+- Add collision detection
 - Practically apply tools to projects
