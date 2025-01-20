@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3 uid="uid://r5rnksh65tue"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_uxwoa"]
+
+[sub_resource type="MeshTexture" id="MeshTexture_0btgh"]
+
+[sub_resource type="MeshTexture" id="MeshTexture_7elvv"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5hexk"]
+diffuse_mode = 3
+vertex_color_is_srgb = true
+albedo_color = Color(0.941176, 0.584314, 0, 1)
+albedo_texture_force_srgb = true
+albedo_texture_msdf = true
+metallic_specular = 0.0
+metallic_texture = SubResource("MeshTexture_0btgh")
+metallic_texture_channel = 2
+roughness_texture = SubResource("MeshTexture_7elvv")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_5pm3c"]
+
+[node name="Main" type="Node3D"]
+
+[node name="Balloon" type="Area3D" parent="."]
+
+[node name="Model" type="MeshInstance3D" parent="Balloon"]
+mesh = SubResource("SphereMesh_uxwoa")
+surface_material_override/0 = SubResource("StandardMaterial3D_5hexk")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Balloon"]
+shape = SubResource("SphereShape3D_5pm3c")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.69158)
+current = true
+fov = 92.0922
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.994571, -0.0757277, 0.0713778, 0.0394207, 0.908943, 0.415052, -0.0963093, -0.409985, 0.906993, 0.316359, 2.01103, 2.59208)

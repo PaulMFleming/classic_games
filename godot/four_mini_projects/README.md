@@ -1,8 +1,8 @@
 # Four Mini Projects
 
-*This is from a course on Zenva Academy*
+_This is from a course on Zenva Academy_
 
-- Prerequisites: Basic skills in Godot and GDScript 
+- Prerequisites: Basic skills in Godot and GDScript
 
 ## Aims of this course:
 
@@ -12,3 +12,12 @@
 - Construct loops for repeated code
 - Add collision detection
 - Practically apply tools to projects
+
+## Projects
+
+### Balloon Popper
+
+#### Learnings
+
+- We need a camera in 3D scenes in order for Godot to know which direction to render our screen.
+-
