@@ -1,39 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://r5rnksh65tue"]
+[gd_scene load_steps=3 format=3 uid="uid://r5rnksh65tue"]
 
-[ext_resource type="Script" path="res://Balloon Popper/balloon.gd" id="1_furbe"]
-[ext_resource type="Material" uid="uid://dysslwsh4f18j" path="res://Balloon Popper/Balloon.tres" id="2_4ym85"]
-
-[sub_resource type="SphereMesh" id="SphereMesh_uxwoa"]
-
-[sub_resource type="MeshTexture" id="MeshTexture_0btgh"]
-
-[sub_resource type="MeshTexture" id="MeshTexture_7elvv"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5hexk"]
-diffuse_mode = 3
-vertex_color_is_srgb = true
-albedo_color = Color(0.941176, 0.584314, 0, 1)
-albedo_texture_force_srgb = true
-albedo_texture_msdf = true
-metallic_specular = 0.0
-metallic_texture = SubResource("MeshTexture_0btgh")
-metallic_texture_channel = 2
-roughness_texture = SubResource("MeshTexture_7elvv")
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_5pm3c"]
+[ext_resource type="Script" path="res://Balloon Popper/BalloonManager.gd" id="1_lb02v"]
+[ext_resource type="PackedScene" uid="uid://bqbqtppfb6bms" path="res://Balloon Popper/Balloon.tscn" id="2_1wsw8"]
 
 [node name="Main" type="Node3D"]
+script = ExtResource("1_lb02v")
 
-[node name="Balloon" type="Area3D" parent="."]
-script = ExtResource("1_furbe")
-
-[node name="Model" type="MeshInstance3D" parent="Balloon"]
-material_override = ExtResource("2_4ym85")
-mesh = SubResource("SphereMesh_uxwoa")
-surface_material_override/0 = SubResource("StandardMaterial3D_5hexk")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Balloon"]
-shape = SubResource("SphereShape3D_5pm3c")
+[node name="Balloon" parent="." instance=ExtResource("2_1wsw8")]
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.69158)
@@ -43,4 +16,32 @@ fov = 92.0922
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.994571, -0.0757277, 0.0713778, 0.0394207, 0.908943, 0.415052, -0.0963093, -0.409985, 0.906993, 0.316359, 2.01103, 2.59208)
 
-[connection signal="input_event" from="Balloon" to="Balloon" method="_on_input_event"]
+[node name="Balloon2" parent="." instance=ExtResource("2_1wsw8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64224, 0, -1.60239)
+
+[node name="Balloon3" parent="." instance=ExtResource("2_1wsw8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.27949, 0, -3.77135)
+
+[node name="Balloon4" parent="." instance=ExtResource("2_1wsw8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.35375, 0, -0.549129)
+
+[node name="Balloon5" parent="." instance=ExtResource("2_1wsw8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9956, 2.38419e-07, 0.213827)
+
+[node name="Balloon7" parent="." instance=ExtResource("2_1wsw8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.34945, 1.38918, -0.0863068)
+
+[node name="Balloon8" parent="." instance=ExtResource("2_1wsw8")]
+transform = Transform3D(0.510603, 0, -0.859817, 0, 1, 0, 0.859817, 0, 0.510603, -1.34945, 1.38918, -0.0863068)
+
+[node name="Balloon6" parent="." instance=ExtResource("2_1wsw8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5039, 0.410458, -0.236724)
+
+[node name="Balloon11" parent="." instance=ExtResource("2_1wsw8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.31284, -0.428182, -1.2591)
+
+[node name="Balloon10" parent="." instance=ExtResource("2_1wsw8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.41683, 1.55373, 0.353553)
+
+[node name="Balloon9" parent="." instance=ExtResource("2_1wsw8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0544567, 0, -3.01127)
