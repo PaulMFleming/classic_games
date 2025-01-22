@@ -23,3 +23,5 @@ _This is from a course on Zenva Academy_
 - Set a material on an object by adding a new Resource of type StandardMaterial3D
 - Add event listeners to Nodes to listen for events like mouse clicks
 - @export before a variable in a scene allows individual instances of the scenes variables to be manipulated independently
+- UI elements like Labels are 2D elements that apply directly to the players screen
+-
