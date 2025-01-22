@@ -42,3 +42,4 @@ _This is from a course on Zenva Academy_
 - The linear value `Damp` on a `RigidBody2D` changes drag when player moves
 - Crate node also gets a sprite and a collision object
 - set different drag on player and crate
+- Convert Crate node to a Scene so we can add multiples
