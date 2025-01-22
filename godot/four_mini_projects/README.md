@@ -40,4 +40,5 @@ _This is from a course on Zenva Academy_
 - `GravityScale` of 1 makes it fall
 - `get_global_mouse_position` is a useful function for getting direction between player and mouse
 - The linear value `Damp` on a `RigidBody2D` changes drag when player moves
--
+- Crate node also gets a sprite and a collision object
+- set different drag on player and crate
