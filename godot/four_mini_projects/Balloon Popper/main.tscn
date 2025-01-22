@@ -24,6 +24,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.27949, 0, -3.77135)
 
 [node name="Balloon4" parent="." instance=ExtResource("2_1wsw8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.35375, 0, -0.549129)
+clicks_to_pop = 6
+score_to_give = 3
 
 [node name="Balloon5" parent="." instance=ExtResource("2_1wsw8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9956, 2.38419e-07, 0.213827)
@@ -33,15 +35,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.34945, 1.38918, -0.0863068
 
 [node name="Balloon8" parent="." instance=ExtResource("2_1wsw8")]
 transform = Transform3D(0.510603, 0, -0.859817, 0, 1, 0, 0.859817, 0, 0.510603, -1.34945, 1.38918, -0.0863068)
+clicks_to_pop = 4
+score_to_give = 2
 
 [node name="Balloon6" parent="." instance=ExtResource("2_1wsw8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5039, 0.410458, -0.236724)
 
 [node name="Balloon11" parent="." instance=ExtResource("2_1wsw8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.31284, -0.428182, -1.2591)
+clicks_to_pop = 5
+score_to_give = 3
 
 [node name="Balloon10" parent="." instance=ExtResource("2_1wsw8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.41683, 1.55373, 0.353553)
 
 [node name="Balloon9" parent="." instance=ExtResource("2_1wsw8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0544567, 0, -3.01127)
+clicks_to_pop = 4
+score_to_give = 2

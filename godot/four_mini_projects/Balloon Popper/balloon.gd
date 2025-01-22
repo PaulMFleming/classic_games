@@ -1,8 +1,8 @@
 extends Area3D
 
-var clicks_to_pop : int = 3
-var size_increase : float = 0.2
-var score_to_give : int = 1
+@export var clicks_to_pop : int = 3
+@export var size_increase : float = 0.2
+@export var score_to_give : int = 1
 
 
 func _on_input_event(camera, event, position, normal, shape_idx):
