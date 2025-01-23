@@ -53,3 +53,28 @@ _This is from a course on Zenva Academy_
 - **Linear Damp** – This acts as drag applied to the velocity, think air resistance.
 - **Angular Velocity** – The velocity but for rotation.
 - **Angular Damp** – Drag applied to the angular velocity.
+
+### Loops
+
+#### Learnings
+
+- We can preload scenes like this
+
+```
+var star_scene = preload("res://Loops/Star.tscn")
+
+# instansiate
+var star = star_scene.instantiate()
+
+# add as child element
+add_child(star)
+```
+
+- ranges are different for float and int:
+
+```
+randi_range(1, 5)
+randf_range(0.2, 1.4)
+```
+
+- change background color in Project Settings > Rendering > Environmnet > Default Clear Color
