@@ -43,3 +43,13 @@ _This is from a course on Zenva Academy_
 - Crate node also gets a sprite and a collision object
 - set different drag on player and crate
 - Convert Crate node to a Scene so we can add multiples
+
+##### Physics Properties
+
+- **Mass** – How heavy the object is in kilograms. The heavier it is, the more force required to move it.
+- **Physics Material Override** – This is a resource where you can define levels of bounciness, friction, etc for the object.
+- **Gravity Scale** – How strongly gravity will pull down the object.
+- **Linear Velocity** – The velocity that will be applied each frame.
+- **Linear Damp** – This acts as drag applied to the velocity, think air resistance.
+- **Angular Velocity** – The velocity but for rotation.
+- **Angular Damp** – Drag applied to the angular velocity.
