@@ -1,4 +1,6 @@
-[gd_scene load_steps=12 format=3 uid="uid://lp5onwittxie"]
+[gd_scene load_steps=13 format=3 uid="uid://lp5onwittxie"]
+
+[ext_resource type="Script" path="res://Collision/PlayerMovement.gd" id="1_23r6t"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_wj1a0"]
 
@@ -45,6 +47,7 @@ shape = SubResource("BoxShape3D_yd2h3")
 [node name="Player" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0197513, 6.43409, 12.8898)
 physics_material_override = SubResource("PhysicsMaterial_qaa0f")
+script = ExtResource("1_23r6t")
 
 [node name="Body" type="MeshInstance3D" parent="Player"]
 transform = Transform3D(0.124987, -0.00620572, -0.00140196, 0.00162458, 0.497895, 0.018149, 0.000731751, -0.0454133, 0.19917, 0, 1.06314, 0.0218098)
