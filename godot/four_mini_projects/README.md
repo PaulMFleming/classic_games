@@ -89,4 +89,5 @@ randf_range(0.2, 1.4)
 - We can rotate the box on the x axis to get a slope - this is our ski slope
 - `RigidBody3D` for our Player
 - Create child nodes and give them Surface Materials to create a model of a player character on skis
+- Add the `CollisionShape3D` child node to Player
 -
