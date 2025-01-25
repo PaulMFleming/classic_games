@@ -90,4 +90,5 @@ randf_range(0.2, 1.4)
 - `RigidBody3D` for our Player
 - Create child nodes and give them Surface Materials to create a model of a player character on skis
 - Add the `CollisionShape3D` child node to Player
--
+- Add Camera (this is a child of Player) and Lighting nodes
+- Add a `WorldEnvironment` child node and change background to custom color
