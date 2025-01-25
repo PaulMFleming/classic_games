@@ -78,3 +78,15 @@ randf_range(0.2, 1.4)
 ```
 
 - change background color in Project Settings > Rendering > Environmnet > Default Clear Color
+
+### Collision
+
+#### Learnings
+
+- `StaticBody3D` node is for having physical, static objects in a 3D game world
+- Add a `MeshInstance3D` child node to the `StaticBody3D`, we gie it a Box Mesh
+- We add a `CollisionShape3D` as a child node of our `StaticBody3d` node
+- We can rotate the box on the x axis to get a slope - this is our ski slope
+- `RigidBody3D` for our Player
+- Create child nodes and give them Surface Materials to create a model of a player character on skis
+-

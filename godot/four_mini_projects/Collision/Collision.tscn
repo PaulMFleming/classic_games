@@ -1,0 +1,55 @@
+[gd_scene load_steps=9 format=3 uid="uid://lp5onwittxie"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_wj1a0"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yd2h3"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_3ns21"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xb00h"]
+albedo_color = Color(0, 0.247059, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_lvxrb"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_20yjd"]
+albedo_color = Color(1, 1, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qxv66"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rff1v"]
+albedo_color = Color(1, 0.301961, 0, 1)
+
+[node name="Main" type="Node3D"]
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(12, 0, 0, 0, 11.2357, 4.21426, 0, -4.21426, 11.2357, 0, 0, 0)
+mesh = SubResource("BoxMesh_wj1a0")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 0, 0)
+shape = SubResource("BoxShape3D_yd2h3")
+
+[node name="Player" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.87158, 2.6058)
+
+[node name="Body" type="MeshInstance3D" parent="Player"]
+transform = Transform3D(0.124987, -0.00620572, -0.00140196, 0.00162458, 0.497895, 0.018149, 0.000731751, -0.0454133, 0.19917, 0, 1.06314, 0.0218098)
+mesh = SubResource("BoxMesh_3ns21")
+surface_material_override/0 = SubResource("StandardMaterial3D_xb00h")
+
+[node name="Head" type="MeshInstance3D" parent="Player"]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 1.39133, -0.0185202)
+mesh = SubResource("SphereMesh_lvxrb")
+surface_material_override/0 = SubResource("StandardMaterial3D_20yjd")
+
+[node name="Ski 1" type="MeshInstance3D" parent="Player"]
+transform = Transform3D(0.1, 0, 0, 0, -0.0499999, 0.00128275, 0, -8.55163e-05, -0.749999, 0.0721771, 0.796006, 0.0203545)
+mesh = SubResource("BoxMesh_qxv66")
+surface_material_override/0 = SubResource("StandardMaterial3D_rff1v")
+
+[node name="Ski 2" type="MeshInstance3D" parent="Player"]
+transform = Transform3D(0.1, 0, 0, 0, -0.0499999, 0.00128275, 0, -8.55163e-05, -0.749999, -0.0884435, 0.796006, 0.0203545)
+mesh = SubResource("BoxMesh_qxv66")
+surface_material_override/0 = SubResource("StandardMaterial3D_rff1v")
