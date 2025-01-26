@@ -92,3 +92,4 @@ randf_range(0.2, 1.4)
 - Add the `CollisionShape3D` child node to Player
 - Add Camera (this is a child of Player) and Lighting nodes
 - Add a `WorldEnvironment` child node and change background to custom color
+- create a group on our tree, so we can easily detect all trees for collision
