@@ -20,3 +20,11 @@ We will create multiple different gameplay features for the game, here is a list
     - Some tile sheets have gaps between tiles - adjust with separation property as/if needed
 - Once `TileSet` is set up - click on Draw in TileMap tab and select in the 2D level window and we can draw selected tiles as we wish (right click deletes)
 - Add physics to tiles by painting which tiles we want to have Physics layer 0 set on in the TileSet tap
+- Player is a `CollisionShape2D` node
+  - In a more complex game, we might want some colliders to interact with some other colliders, but not all. For our game though, it’s not a problem.
+    - **Layer Section** – This describes the collision layer that the object appears in. By default, all bodies are on layer 1.
+    - **Mask Section** – This describes what layers the body will check for collisions. If you want this object to ignore certain layers, you can disable them here.
+- call `move_and_slide()` to initiate movement
+- put all physics logic in the `_physics_process` function (our physics game loop)
+- `is_on_floor()` detects if Player is on the floor
+- `get_tree()` function gets the current Node tree
