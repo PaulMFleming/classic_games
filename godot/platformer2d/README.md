@@ -19,3 +19,4 @@ We will create multiple different gameplay features for the game, here is a list
     - ensure `Tile Size` for `Tile Set` in Inspector (at right of Godot) matches `Tile Region` size in `TileSet` view (at bottom of Godot)
     - Some tile sheets have gaps between tiles - adjust with separation property as/if needed
 - Once `TileSet` is set up - click on Draw in TileMap tab and select in the 2D level window and we can draw selected tiles as we wish (right click deletes)
+- Add physics to tiles by painting which tiles we want to have Physics layer 0 set on in the TileSet tap
