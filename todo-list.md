@@ -51,8 +51,10 @@
 - [ ] Fix enemy collision detection
 - [ ] Optimize rendering for large numbers of enemies
 - [ ] Balance difficulty progression
-- [ ] Make all level up text center screen
-- [ ] Make all unlock messages appear center screen
+- [x] Make all level up text center screen
+  - [ ] move it to the center bottom of the screen
+- [x] Make all unlock messages appear center screen
+  - [ ] move it to the center bottom of the screen
 
 ## Nice to Have
 

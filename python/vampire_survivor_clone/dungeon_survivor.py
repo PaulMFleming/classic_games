@@ -77,6 +77,7 @@ class Player(pygame.sprite.Sprite):
         # Create level up message
         level_msg = LevelUpMessage(self.level)
         Game.instance.unlock_messages.add(level_msg)
+        print(f"Created level up message for level {self.level}")
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -145,7 +146,7 @@ class Player(pygame.sprite.Sprite):
         # Check if player has enough XP to unlock Ice Blast
         if self.xp >= 100 and not self.ice_blast_unlocked:
             self.ice_blast_unlocked = True
-            unlock_msg = UnlockMessage()
+            unlock_msg = IceBlastUnlockMessage()
             Game.instance.unlock_messages.add(unlock_msg)
 
         # Check if player has enough XP to unlock Bomb
@@ -522,10 +523,8 @@ class Game:
         self.difficulty_increase_rate = 50  # How much to decrease delay
         self.max_zombies = 150  # Maximum zombies allowed at once
 
-        # Add after other sprite groups
         self.xp_texts = pygame.sprite.Group()
 
-        # Add with other sprite groups
         self.ice_blasts = pygame.sprite.Group()
         self.ice_explosions = pygame.sprite.Group()
         self.unlock_messages.update()
@@ -637,6 +636,7 @@ class Game:
             self.shockwaves.update()
             self.bombs.update()
             self.bomb_explosions.update()
+            self.unlock_messages.update()
 
             self.camera.update(self.player)
 
@@ -822,7 +822,7 @@ class Game:
             
             # Add with other sprite drawing
             for msg in self.unlock_messages:
-                self.screen.blit(msg.surf, self.camera.apply(msg))
+                self.screen.blit(msg.surf, msg.rect)
 
             self.bombs.update()
             self.bomb_explosions.update()
@@ -831,6 +831,11 @@ class Game:
                 self.screen.blit(bomb.surf, self.camera.apply(bomb))
             for explosion in self.bomb_explosions:
                 self.screen.blit(explosion.surf, self.camera.apply(explosion))
+
+            # Draw power-up texts directly to screen
+            self.power_up_texts.update()
+            for text in self.power_up_texts:
+                self.screen.blit(text.surf, text.rect)
 
             pygame.display.flip()
             self.clock.tick(60)
@@ -1022,16 +1027,21 @@ class IceExplosion(pygame.sprite.Sprite):
             )
 
 
-class UnlockMessage(pygame.sprite.Sprite):
+class IceBlastUnlockMessage(pygame.sprite.Sprite):
     def __init__(self):
-        super(UnlockMessage, self).__init__()
+        super(IceBlastUnlockMessage, self).__init__()
         self.font = pygame.font.Font(None, 48)
         self.surf = self.font.render("Ice Blast Unlocked!", True, (0, 191, 255))
-        self.rect = self.surf.get_rect(center=(MAP_WIDTH//2, MAP_HEIGHT//2))
+        self.rect = self.surf.get_rect()
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        self.rect.center = (screen_width//2, screen_height//2)
         self.creation_time = pygame.time.get_ticks()
         self.lifetime = 2000  # 2 seconds
         
     def update(self):
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        self.rect.center = (screen_width//2, screen_height//2)
+
         if pygame.time.get_ticks() - self.creation_time > self.lifetime:
             self.kill()
 
@@ -1041,11 +1051,16 @@ class BombUnlockMessage(pygame.sprite.Sprite):
         super(BombUnlockMessage, self).__init__()
         self.font = pygame.font.Font(None, 48)
         self.surf = self.font.render("Bomb Unlocked!", True, (255, 140, 0))  # Orange text
-        self.rect = self.surf.get_rect(center=(MAP_WIDTH//2, MAP_HEIGHT//2))
+        self.rect = self.surf.get_rect()
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        self.rect.center = (screen_width//2, screen_height//2)
         self.creation_time = pygame.time.get_ticks()
         self.lifetime = 2000  # 2 seconds
         
     def update(self):
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        self.rect.center = (screen_width//2, screen_height//2)
+
         if pygame.time.get_ticks() - self.creation_time > self.lifetime:
             self.kill()
 
@@ -1122,11 +1137,20 @@ class LevelUpMessage(pygame.sprite.Sprite):
         super(LevelUpMessage, self).__init__()
         self.font = pygame.font.Font(None, 48)
         self.surf = self.font.render(f"Level {level}!", True, (255, 215, 0))  # Gold color
-        self.rect = self.surf.get_rect(center=(MAP_WIDTH//2, MAP_HEIGHT//2))
+        
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        self.rect = self.surf.get_rect(center=(screen_width//2, screen_height//2))
+
+        self.layer = 10
+
         self.creation_time = pygame.time.get_ticks()
         self.lifetime = 2000  # 2 seconds
         
     def update(self):
+        # keep centred even if the view changes
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        self.rect.center = (screen_width//2, screen_height//2)
+
         if pygame.time.get_ticks() - self.creation_time > self.lifetime:
             self.kill()
 
@@ -1139,7 +1163,11 @@ class PowerUpText(pygame.sprite.Sprite):
         if PowerUpText.font is None:
             PowerUpText.font = pygame.font.Font(None, 36)
         self.surf = PowerUpText.font.render(message, True, (255, 215, 0))  # Gold text
-        self.rect = self.surf.get_rect(center=(x, y))
+        self.rect = self.surf.get_rect()
+
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        self.rect.center = (screen_width//2, screen_height//2)        
+
         self.creation_time = pygame.time.get_ticks()
         self.lifetime = 1000  # 1 second
         self.float_speed = 1
@@ -1147,8 +1175,12 @@ class PowerUpText(pygame.sprite.Sprite):
         
     def update(self):
         # Float upward
-        self.y_offset -= self.float_speed
-        self.rect.y += self.y_offset
+        # self.y_offset -= self.float_speed
+        # self.rect.y += self.y_offset
+
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        self.rect.center = (screen_width//2, screen_height//2)
+
         
         # Kill after lifetime
         if pygame.time.get_ticks() - self.creation_time > self.lifetime:
