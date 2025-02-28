@@ -651,6 +651,7 @@ class Game:
         self.fireballs = pygame.sprite.Group()
         self.shockwaves = pygame.sprite.Group()
         self.power_ups = pygame.sprite.Group()  # Add power-ups group
+        self.monster_attacks = pygame.sprite.Group()
         self.last_power_up_spawn = pygame.time.get_ticks()
         self.power_up_spawn_delay = 2000  # Start with X seconds between spawns
         self.min_power_up_delay = 1500    # Minimum 1.5 seconds between spawns
