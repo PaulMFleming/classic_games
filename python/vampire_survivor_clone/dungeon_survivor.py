@@ -1034,13 +1034,13 @@ class IceBlastUnlockMessage(pygame.sprite.Sprite):
         self.surf = self.font.render("Ice Blast Unlocked!", True, (0, 191, 255))
         self.rect = self.surf.get_rect()
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        self.rect.center = (screen_width//2, screen_height//2)
+        self.rect.center = (screen_width//2, screen_height//5)
         self.creation_time = pygame.time.get_ticks()
         self.lifetime = 2000  # 2 seconds
         
     def update(self):
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        self.rect.center = (screen_width//2, screen_height//2)
+        self.rect.center = (screen_width//2, screen_height//5)
 
         if pygame.time.get_ticks() - self.creation_time > self.lifetime:
             self.kill()
@@ -1053,13 +1053,13 @@ class BombUnlockMessage(pygame.sprite.Sprite):
         self.surf = self.font.render("Bomb Unlocked!", True, (255, 140, 0))  # Orange text
         self.rect = self.surf.get_rect()
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        self.rect.center = (screen_width//2, screen_height//2)
+        self.rect.center = (screen_width//2, screen_height//5)
         self.creation_time = pygame.time.get_ticks()
         self.lifetime = 2000  # 2 seconds
         
     def update(self):
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        self.rect.center = (screen_width//2, screen_height//2)
+        self.rect.center = (screen_width//2, screen_height//5)
 
         if pygame.time.get_ticks() - self.creation_time > self.lifetime:
             self.kill()
@@ -1139,7 +1139,7 @@ class LevelUpMessage(pygame.sprite.Sprite):
         self.surf = self.font.render(f"Level {level}!", True, (255, 215, 0))  # Gold color
         
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        self.rect = self.surf.get_rect(center=(screen_width//2, screen_height//2))
+        self.rect = self.surf.get_rect(center=(screen_width//2, screen_height//5))
 
         self.layer = 10
 
@@ -1149,7 +1149,7 @@ class LevelUpMessage(pygame.sprite.Sprite):
     def update(self):
         # keep centred even if the view changes
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        self.rect.center = (screen_width//2, screen_height//2)
+        self.rect.center = (screen_width//2, screen_height//5)
 
         if pygame.time.get_ticks() - self.creation_time > self.lifetime:
             self.kill()
@@ -1162,11 +1162,11 @@ class PowerUpText(pygame.sprite.Sprite):
         super(PowerUpText, self).__init__()
         if PowerUpText.font is None:
             PowerUpText.font = pygame.font.Font(None, 36)
-        self.surf = PowerUpText.font.render(message, True, (255, 215, 0))  # Gold text
+        self.surf = PowerUpText.font.render(message, True, (200, 10, 10))
         self.rect = self.surf.get_rect()
 
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        self.rect.center = (screen_width//2, screen_height//2)        
+        self.rect.center = (screen_width//2, screen_height//3)        
 
         self.creation_time = pygame.time.get_ticks()
         self.lifetime = 1000  # 1 second
@@ -1179,7 +1179,7 @@ class PowerUpText(pygame.sprite.Sprite):
         # self.rect.y += self.y_offset
 
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        self.rect.center = (screen_width//2, screen_height//2)
+        self.rect.center = (screen_width//2, screen_height//3)
 
         
         # Kill after lifetime

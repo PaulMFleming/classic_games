@@ -52,9 +52,10 @@
 - [ ] Optimize rendering for large numbers of enemies
 - [ ] Balance difficulty progression
 - [x] Make all level up text center screen
-  - [ ] move it to the center bottom of the screen
+  - [x] move it to the center top of the screen
 - [x] Make all unlock messages appear center screen
-  - [ ] move it to the center bottom of the screen
+  - [x] move it to the center top of the screen
+- [x] no overlapping text
 
 ## Nice to Have
 
