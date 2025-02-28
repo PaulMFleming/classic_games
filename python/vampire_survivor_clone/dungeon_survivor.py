@@ -910,6 +910,21 @@ class Game:
                         zombie_collision.rect.y += knockback_distance
                         zombie_collision.pos.y = zombie_collision.rect.y  # Update position vector
 
+            # Modify monster-player collision check
+            monster_collision = pygame.sprite.spritecollideany(self.player, self.monsters)
+            if monster_collision:
+                current_time = pygame.time.get_ticks()
+                if current_time - monster_collision.last_collision >= monster_collision.collision_cooldown:
+                    self.player.take_damage(3)
+                    monster_collision.last_collision = current_time
+                    monster_collision.start_bounce_animation()
+                    
+                    # Add knockback
+                    knockback_distance = 75
+                    if monster_collision.rect.x < self.player.rect.x:
+                        monster_collision.rect.x -= knockback_distance
+                        monster_collision.pos.x = monster_collision.rect.x
+
             # Check for player death
             if self.player.health <= 0:
                 # Update high score if needed
