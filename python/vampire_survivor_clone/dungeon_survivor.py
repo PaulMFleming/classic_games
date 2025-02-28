@@ -696,6 +696,23 @@ class Game:
             zombie.speed = self.base_zombie_speed * self.get_current_difficulty()
             self.zombies.add(zombie)
 
+    def spawn_monster(self):
+        num_monsters = random.randint(1, 3)  # Spawn 1-3 monsters at once
+
+        for _ in range(num_monsters):
+            while True:
+                x = random.randint(100, MAP_WIDTH - 100)
+                y = random.randint(100, MAP_HEIGHT - 100)
+                dx = x - self.player.rect.centerx
+                dy = y - self.player.rect.centery
+                distance = math.sqrt(dx * dx + dy * dy)
+                if distance > 300:  # At least 300 pixels from player
+                    break
+
+            monster = Monster.spawn_monster(self.player)
+            monster.speed = self.base_monster_speed * self.get_current_difficulty()
+            self.monsters.add(monster)
+
     def show_game_over_screen(self):
         game_over = True
         while game_over:
