@@ -384,6 +384,8 @@ class Monster(pygame.sprite.Sprite):
         self.health = 20
         self.last_collision = 0
         self.collision_cooldown = 500  # Milliseconds between collisions
+        self.last_attack = 0
+        self.attack_cooldown = 2000  # 2 seconds between attacks
 
         self.debug_font = pygame.font.Font(None, 20)
 
@@ -462,6 +464,18 @@ class Monster(pygame.sprite.Sprite):
         # Keep monster on screen
         self.rect.clamp_ip(pygame.Rect(0, 0, MAP_WIDTH, MAP_HEIGHT))
 
+        # Check if monster should attack
+        if current_time - self.last_attack >= self.attack_cooldown and not self.is_being_knocked and not self.is_dying:
+            # Only attack if player is within range (500 pixels)
+            dx = self.player.rect.centerx - self.rect.centerx
+            dy = self.player.rect.centery - self.rect.centery
+            distance = math.sqrt(dx * dx + dy * dy)
+            
+            if distance < 500:
+                attack = self.attack()
+                Game.instance.monster_attacks.add(attack)
+                self.last_attack = current_time
+
     def take_damage(self, damage):
         # Don't apply damage if already dying
         if self.is_dying:
@@ -488,7 +502,7 @@ class Monster(pygame.sprite.Sprite):
             self.scale_start_time = pygame.time.get_ticks()
 
     def attack(self):
-        return MonsterAttack(self.rect.x, self.rect.y, self.direction)
+        return MonsterAttack(self.rect.x, self.rect.y, self.direction, self.player)
     
     @staticmethod
     def spawn_monster(player):
@@ -1392,6 +1406,45 @@ class PowerUpText(pygame.sprite.Sprite):
         
         # Kill after lifetime
         if pygame.time.get_ticks() - self.creation_time > self.lifetime:
+            self.kill()
+
+
+class MonsterAttack(pygame.sprite.Sprite):
+    def __init__(self, x, y, direction, target_player):
+        super(MonsterAttack, self).__init__()
+        # Create a purple projectile for the monster attack
+        self.surf = pygame.Surface((15, 15), pygame.SRCALPHA)
+        pygame.draw.circle(self.surf, (128, 0, 128), (7, 7), 7)  # Purple circle
+        pygame.draw.circle(self.surf, (186, 85, 211), (5, 5), 3)  # Light purple highlight
+        
+        self.rect = self.surf.get_rect(center=(x + 20, y + 20))  # Offset slightly from monster position
+        
+        # Calculate direction vector toward the player
+        player_pos = pygame.math.Vector2(target_player.rect.center)
+        self.pos = pygame.math.Vector2(self.rect.center)
+        
+        # Get direction vector to player
+        direction_to_player = player_pos - self.pos
+        if direction_to_player.length() > 0:
+            direction_to_player = direction_to_player.normalize()
+        
+        self.direction = direction_to_player
+        self.speed = 8
+        self.damage = 5
+
+    def update(self):
+        self.pos += self.direction * self.speed
+        self.rect.center = self.pos
+        
+        # Check for collision with player
+        if self.rect.colliderect(Game.instance.player.rect):
+            Game.instance.player.take_damage(self.damage)
+            self.kill()
+        
+        # Remove if off screen
+        if self.rect.right < 0 or self.rect.left > MAP_WIDTH:
+            self.kill()
+        if self.rect.top < 0 or self.rect.bottom > MAP_HEIGHT:
             self.kill()
 
 
