@@ -56,6 +56,7 @@
 - [x] Make all unlock messages appear center screen
   - [x] move it to the center top of the screen
 - [x] no overlapping text
+- [ ] Thanos power up not loading
 
 ## Nice to Have
 

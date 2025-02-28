@@ -787,12 +787,16 @@ class Game:
                     self.power_up_texts.add(power_text)
                 elif power_up_collision.power_type == "health":
                     self.player.health = min(100, self.player.health + 15)  # Cap at 100 health
+                    power_text = PowerUpText(self.player.rect.centerx, self.player.rect.top, 
+                                           "Health +15!")
                 elif power_up_collision.power_type == "thanos":
                     # Get all zombies and randomly eliminate half
                     zombie_list = list(self.zombies)
                     zombies_to_remove = random.sample(zombie_list, len(zombie_list) // 2)
                     for zombie in zombies_to_remove:
                         zombie.take_damage(999)  # Instant kill
+                    power_text = PowerUpText(self.player.rect.centerx, self.player.rect.top, 
+                                           "Thanos Snap!")
                 power_up_collision.kill()
 
             # Add after other sprite updates
@@ -855,7 +859,7 @@ class Game:
                 break
         
         # Randomly choose power-up type
-        power_type = random.choice(["fireball", "health"])
+        power_type = random.choice(["fireball", "health", "thanos"])
         power_up = PowerUp(x, y, power_type)
         self.power_ups.add(power_up)
         print(f"{power_type} power-up spawned at ({x}, {y})")  # Debug message
@@ -1162,7 +1166,7 @@ class PowerUpText(pygame.sprite.Sprite):
         super(PowerUpText, self).__init__()
         if PowerUpText.font is None:
             PowerUpText.font = pygame.font.Font(None, 36)
-        self.surf = PowerUpText.font.render(message, True, (200, 10, 10))
+        self.surf = PowerUpText.font.render(message, True, (240, 100, 10))
         self.rect = self.surf.get_rect()
 
         screen_width, screen_height = pygame.display.get_surface().get_size()
