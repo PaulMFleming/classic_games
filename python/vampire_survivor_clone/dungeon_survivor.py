@@ -381,10 +381,11 @@ class Monster(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=(x, y))
         self.direction = "right"
         self.speed = random.randint(1, 3)
-        self.player = player
         self.health = 20
         self.last_collision = 0
         self.collision_cooldown = 500  # Milliseconds between collisions
+
+        self.debug_font = pygame.font.Font(None, 20)
 
         # Animation states
         self.original_surf = self.surf.copy()  # Store original surface
@@ -492,8 +493,9 @@ class Monster(pygame.sprite.Sprite):
     @staticmethod
     def spawn_monster(player):
         monster = Monster(
-            random.randint(0, MAP_WIDTH), random.randint(0, MAP_HEIGHT), player
+            random.randint(0, MAP_WIDTH), random.randint(0, MAP_HEIGHT)
         )
+        monster.player = player
         return monster
 
 
@@ -814,7 +816,7 @@ class Game:
                     
                     debug_text = monster.debug_font.render(
                         f"Monster ({int(monster.health)}hp)",
-                        True, (255, 300, 255)
+                        True, (255, 200, 255)
                     )
                     text_rect = debug_text.get_rect(
                         midbottom=self.camera.apply(monster).midtop
