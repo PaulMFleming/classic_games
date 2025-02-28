@@ -774,6 +774,7 @@ class Game:
                     self.shockwaves.add(attack_result[0])
 
             self.zombies.update()
+            self.monsters.update()
             self.fireballs.update()
             self.shockwaves.update()
             self.bombs.update()
@@ -864,7 +865,7 @@ class Game:
 
                 if random.random() < 0.2:  # 10% chance to spawn a monster
                     self.spawn_monster()
-                    
+
                 self.last_spawn = current_time
                 # Increase difficulty (decrease spawn delay)
                 if self.zombie_spawn_delay > self.min_spawn_delay:
