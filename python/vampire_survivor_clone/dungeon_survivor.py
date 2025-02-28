@@ -847,6 +847,9 @@ class Game:
             for shockwave in self.shockwaves:
                 self.screen.blit(shockwave.surf, self.camera.apply(shockwave))
 
+            for attack in self.monster_attacks:
+                self.screen.blit(attack.surf, self.camera.apply(attack))
+
             # Draw health and score
             speed_multiplier = self.get_current_difficulty()
             minutes_elapsed = (pygame.time.get_ticks() - self.game_start_time) / 60000
