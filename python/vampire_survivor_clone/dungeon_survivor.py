@@ -786,9 +786,10 @@ class Game:
                                            "Fireball +5 DMG!")
                     self.power_up_texts.add(power_text)
                 elif power_up_collision.power_type == "health":
-                    self.player.health = min(100, self.player.health + 15)  # Cap at 100 health
+                    self.player.health = min(100, self.player.health + 15)
                     power_text = PowerUpText(self.player.rect.centerx, self.player.rect.top, 
                                            "Health +15!")
+                    self.unlock_messages.add(power_text)
                 elif power_up_collision.power_type == "thanos":
                     # Get all zombies and randomly eliminate half
                     zombie_list = list(self.zombies)
@@ -797,6 +798,7 @@ class Game:
                         zombie.take_damage(999)  # Instant kill
                     power_text = PowerUpText(self.player.rect.centerx, self.player.rect.top, 
                                            "Thanos Snap!")
+                    self.unlock_messages.add(power_text)
                 power_up_collision.kill()
 
             # Add after other sprite updates
@@ -1166,7 +1168,7 @@ class PowerUpText(pygame.sprite.Sprite):
         super(PowerUpText, self).__init__()
         if PowerUpText.font is None:
             PowerUpText.font = pygame.font.Font(None, 36)
-        self.surf = PowerUpText.font.render(message, True, (240, 100, 10))
+        self.surf = PowerUpText.font.render(message, True, (240, 240, 240))
         self.rect = self.surf.get_rect()
 
         screen_width, screen_height = pygame.display.get_surface().get_size()
