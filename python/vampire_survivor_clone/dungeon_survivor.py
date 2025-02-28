@@ -857,14 +857,19 @@ class Game:
                         zombie.knockback_velocity.y = math.sin(final_angle) * knockback_speed
                         zombie.is_being_knocked = True
 
-            # Handle zombie spawning
+            # Handle enemy spawning
             current_time = pygame.time.get_ticks()
             if current_time - self.last_spawn >= self.zombie_spawn_delay:
                 self.spawn_zombie()
+
+                if random.random() < 0.2:  # 10% chance to spawn a monster
+                    self.spawn_monster()
+                    
                 self.last_spawn = current_time
                 # Increase difficulty (decrease spawn delay)
                 if self.zombie_spawn_delay > self.min_spawn_delay:
                     self.zombie_spawn_delay -= self.difficulty_increase_rate
+
 
             # Modify zombie-player collision check
             zombie_collision = pygame.sprite.spritecollideany(self.player, self.zombies)
