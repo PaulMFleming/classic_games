@@ -662,6 +662,7 @@ class Game:
         # Add after other game properties
         self.game_start_time = pygame.time.get_ticks()
         self.base_zombie_speed = 2
+        self.base_monster_speed = 1.5
         self.base_spawn_delay = 2000  # Initial spawn delay (2 seconds)
         self.min_spawn_delay = 500    # Fastest spawn rate (0.5 seconds)
         self.speed_increase_rate = 0.1  # How much to increase speed every minute
