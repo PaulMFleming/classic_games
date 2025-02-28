@@ -372,6 +372,129 @@ class Zombie(pygame.sprite.Sprite):
             random.randint(0, MAP_WIDTH), random.randint(0, MAP_HEIGHT), player
         )
         return zombie
+    
+class Monster(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super(Monster, self).__init__()
+        self.surf = pygame.image.load("images/monster.png")
+        self.surf.set_colorkey((0, 0, 0), RLEACCEL)
+        self.rect = self.surf.get_rect(center=(x, y))
+        self.direction = "right"
+        self.speed = random.randint(1, 3)
+        self.player = player
+        self.health = 20
+        self.last_collision = 0
+        self.collision_cooldown = 500  # Milliseconds between collisions
+
+        # Animation states
+        self.original_surf = self.surf.copy()  # Store original surface
+        self.current_scale = 1.0
+        self.is_scaling = False
+        self.scale_start_time = 0
+        self.scale_duration = 300  # 1 second for scale animation
+
+        # Death animation
+        self.is_dying = False
+        self.death_start_time = 0
+        self.death_duration = 1000  # 1 second for death animation
+        self.flash_interval = 100
+        self.visible = True
+
+        # Vector movement attributes
+        self.pos = pygame.math.Vector2(x, y)
+        self.vel = pygame.math.Vector2()
+        self.acceleration = pygame.math.Vector2()
+
+        self.knockback_velocity = pygame.math.Vector2(0, 0)
+        self.knockback_friction = 0.82  # Reduces velocity each frame 
+        self.is_being_knocked = False
+
+    def update(self):
+        current_time = pygame.time.get_ticks()
+
+        if self.is_being_knocked:
+            # Apply knockback velocity
+            self.rect.x += self.knockback_velocity.x
+            self.rect.y += self.knockback_velocity.y
+            self.pos.x = self.rect.x
+            self.pos.y = self.rect.y
+
+            # Apply friction to slow down
+            self.knockback_velocity *= self.knockback_friction
+
+            # Stop knockback when velocity is very small
+            if self.knockback_velocity.length() < 0.1:
+                self.is_being_knocked = False
+                self.knockback_velocity.x = 0
+                self.knockback_velocity.y = 0
+
+            # Don't do normal movement while being knocked back
+            return
+        # Handle bounce animation
+        if self.is_scaling:
+            progress = (current_time - self.scale_start_time) / self.scale_duration
+            if progress <= 0.25:
+                self.current_scale = 1.0 + (0.1 * (progress * 4))
+            elif progress <= 0.75:
+                self.current_scale = 1.1 - (0.2 * ((progress - 0.25) * 2))
+            elif progress <= 1:
+                self.current_scale = 0.9 + (0.1 * ((progress - 0.75) * 4))
+            else:
+                self.current_scale = 0.95
+                self.is_scaling = False
+        # Handle death animation
+        if self.is_dying:
+            if current_time - self.death_start_time >= self.death_duration:
+                self.kill()
+            else:
+                # Toggle visibility based on flash interval
+                self.visible = ((current_time - self.death_start_time) // self.flash_interval) % 2 == 0
+        # Only move towards player if not being knocked back
+        if self.rect.x < self.player.rect.x:
+            self.rect.x += self.speed
+        if self.rect.x > self.player.rect.x:
+            self.rect.x -= self.speed
+        if self.rect.y < self.player.rect.y:
+            self.rect.y += self.speed
+        if self.rect.y > self.player.rect.y:
+            self.rect.y -= self.speed
+        # Keep monster on screen
+        self.rect.clamp_ip(pygame.Rect(0, 0, MAP_WIDTH, MAP_HEIGHT))
+
+    def take_damage(self, damage):
+        # Don't apply damage if already dying
+        if self.is_dying:
+            return
+
+        self.health -= damage
+        print(f"Monster took {damage} damage. Health now: {self.health}")
+
+        if self.health <= 0:
+            self.health = 0
+            self.is_dying = True
+            self.death_start_time = pygame.time.get_ticks()
+            self.player.score += 1
+            self.player.xp += 20
+
+            # Create floating XP text
+            xp_text = XPText(self.rect.centerx, self.rect.top)
+            Game.instance.xp_texts.add(xp_text)
+            self.kill()
+
+    def start_bounce_animation(self):
+        if not self.is_scaling:
+            self.is_scaling = True
+            self.scale_start_time = pygame.time.get_ticks()
+
+    def attack(self):
+        return MonsterAttack(self.rect.x, self.rect.y, self.direction)
+    
+    @staticmethod
+    def spawn_monster(player):
+        monster = Monster(
+            random.randint(0, MAP_WIDTH), random.randint(0, MAP_HEIGHT), player
+        )
+        return monster
 
 
 #############################################
