@@ -797,6 +797,7 @@ class Game:
             self.bombs.update()
             self.bomb_explosions.update()
             self.unlock_messages.update()
+            self.monster_attacks.update()
 
             self.camera.update(self.player)
 
