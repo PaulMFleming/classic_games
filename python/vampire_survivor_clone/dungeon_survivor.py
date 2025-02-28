@@ -631,6 +631,7 @@ class Game:
         self.camera = Camera(MAP_WIDTH, MAP_HEIGHT)
 
         self.zombies = pygame.sprite.Group()
+        self.monsters = pygame.sprite.Group()
         self.fireballs = pygame.sprite.Group()
         self.shockwaves = pygame.sprite.Group()
         self.power_ups = pygame.sprite.Group()  # Add power-ups group
