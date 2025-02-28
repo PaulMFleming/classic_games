@@ -844,8 +844,12 @@ class Game:
             # Check for collisions between fireballs and zombies
             for fireball in self.fireballs:
                 zombie_hit = pygame.sprite.spritecollideany(fireball, self.zombies)
+                monster_hit = pygame.sprite.spritecollideany(fireball, self.monsters)
                 if zombie_hit and not zombie_hit.is_dying:  # Only hit if not already dying
                     zombie_hit.take_damage(fireball.damage)
+                    fireball.kill()
+                elif monster_hit and not monster_hit.is_dying:  # Only hit if not already dying
+                    monster_hit.take_damage(fireball.damage)
                     fireball.kill()
 
             # Check for shockwave collisions
@@ -871,6 +875,25 @@ class Game:
                         zombie.knockback_velocity.x = math.cos(final_angle) * knockback_speed
                         zombie.knockback_velocity.y = math.sin(final_angle) * knockback_speed
                         zombie.is_being_knocked = True
+
+                for monster in self.monsters:
+                    if monster.is_dying:
+                        continue
+                    if shockwave.is_point_in_arc(monster.rect.centerx, monster.rect.centery):
+                        monster.take_damage(shockwave.damage)
+                        monster.start_bounce_animation()
+                        
+                        # Calculate knockback direction with random angle
+                        knockback_speed = 20
+                        base_angle = math.atan2(
+                            monster.rect.centery - shockwave.center_y,
+                            monster.rect.centerx - shockwave.center_x
+                        )
+                        random_angle = math.radians(random.uniform(-30, 30))
+                        final_angle = base_angle + random_angle
+                        monster.knockback_velocity.x = math.cos(final_angle) * knockback_speed
+                        monster.knockback_velocity.y = math.sin(final_angle) * knockback_speed
+                        monster.is_being_knocked = True
 
             # Handle enemy spawning
             current_time = pygame.time.get_ticks()
