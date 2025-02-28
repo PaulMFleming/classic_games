@@ -807,6 +807,20 @@ class Game:
                         midbottom=self.camera.apply(zombie).midtop
                     )
                     self.screen.blit(debug_text, text_rect)
+
+            for monster in self.monsters:
+                if not monster.is_dying or (monster.is_dying and monster.visible):
+                    self.screen.blit(monster.surf, self.camera.apply(monster))
+                    
+                    debug_text = monster.debug_font.render(
+                        f"Monster ({int(monster.health)}hp)",
+                        True, (255, 300, 255)
+                    )
+                    text_rect = debug_text.get_rect(
+                        midbottom=self.camera.apply(monster).midtop
+                    )
+                    self.screen.blit(debug_text, text_rect)
+
             for fireball in self.fireballs:
                 pygame.draw.rect(
                     self.screen, (255, 0, 0), self.camera.apply(fireball), 1
