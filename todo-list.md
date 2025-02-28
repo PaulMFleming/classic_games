@@ -23,11 +23,12 @@
 
 ## Planned Features
 
+- [ ] Shockwave can change the direction of monster ranged attacks
 - [ ] Additional enemy types
-  - [ ] Ranged enemies
-  - [ ] Boss enemies
+  - [x] Ranged enemies - Monster
+  - [ ] Boss enemies - Gargoyle
 - [ ] Weapons and equipment system
-- [ ] Health pickup items
+- [x] Health pickup items
 - [ ] Special abilities with cooldowns
 - [ ] Multiple levels/environments
 - [ ] Sound effects and music

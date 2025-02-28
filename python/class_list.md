@@ -7,6 +7,7 @@
 ## Enemy Classes
 
 - **Zombie**: Basic enemy that follows the player with various personalities (Wanderer, Speedy, Agile, Hunter)
+- **Monster**: Advanced enemy with ranged attack capabilities
 
 ## Weapon/Attack Classes
 
@@ -16,6 +17,7 @@
 - **IceExplosion**: Area effect created when IceBlast hits a target
 - **Bomb**: Deployable explosive that moves downward and explodes
 - **BombExplosion**: Area effect created when a Bomb explodes
+- **MonsterAttack**: Ranged projectile fired by Monster enemies toward the player
 
 ## Visual Effects/UI Classes
 
