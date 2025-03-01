@@ -21,6 +21,10 @@ class Enemy < Entity
     @health -= amount
     @dead = true if @health <= 0
   end
+
+  def dead?
+    @dead
+  end
   
   def on_collision(player)
     # Default collision behavior
