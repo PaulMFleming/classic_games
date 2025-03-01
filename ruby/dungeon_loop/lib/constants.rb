@@ -25,6 +25,7 @@ module Constants
     green: Gosu::Color::GREEN,
     blue: Gosu::Color::BLUE,
     yellow: Gosu::Color::YELLOW,
-    gray: Gosu::Color::GRAY
+    gray: Gosu::Color::GRAY,
     gold: Gosu::Color.new(255, 255, 215, 0)
   }
+end
