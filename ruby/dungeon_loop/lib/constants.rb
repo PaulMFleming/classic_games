@@ -6,6 +6,8 @@ module Constants
   PLAYER_SPEED = 5
   PLAYER_START_LIVES = 5
   PLAYER_MAX_HEALTH = 100
+  PLAYER_START_HEALTH = 100
+  PLAYER_IMAGE = 'assets/player.png'
 
   ENEMY_SPAWN_RATE = 2
 
