@@ -11,7 +11,8 @@ Dungeon Loop Game
 - [ ] add Zombie image
 - [ ] change player direction with movement
 - [ ] implement fireball weapon
-- [ ] add weapon class
+- [ ] add projectile class
+- [x] add weapon class
 - [x] fix lives bug
 - [x] fix any bugs from below tasks to get basic implementation running
 - [x] Game over state
