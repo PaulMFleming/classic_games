@@ -4,7 +4,8 @@ Dungeon Loop Game
 
 ## To-Do List
 
-- [ ] Game over state
+- [ ] fix any bugs from below tasks to get basic implementation running
+- [x] Game over state
 - [x] Shop state
 - [x] Menu state
 - [x] Zombie Class
