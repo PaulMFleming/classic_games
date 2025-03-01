@@ -30,4 +30,18 @@ module Constants
     gray: Gosu::Color::GRAY,
     gold: Gosu::Color.new(255, 255, 215, 0)
   }
+
+    WEAPON_COSTS = {
+    fireball: 0,    # Starting weapon is free
+    ice_blast: 100,
+    bomb: 150,
+    lightning: 200
+  }
+
+  DIRECTION_NAMES = {
+    up: "Up",
+    down: "Down", 
+    left: "Left",
+    right: "Right"
+  }
 end

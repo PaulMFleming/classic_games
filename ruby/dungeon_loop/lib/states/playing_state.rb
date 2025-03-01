@@ -35,6 +35,9 @@ class PlayingState < State
   
   def update
     @player.update
+
+    new_projectiles = @player.fire_weapons
+    @projectiles.concat(new_projectiles) unless new_projectiles.any?
     
     # Spawn enemies periodically
     if Gosu.milliseconds - @last_enemy_spawn > Constants::ENEMY_SPAWN_RATE * 1000
