@@ -5,7 +5,7 @@ Dungeon Loop Game
 ## To-Do List
 
 - [ ] Game over state
-- [ ] Shop state
+- [x] Shop state
 - [x] Menu state
 - [x] Zombie Class
 - [x] Enemy Class
