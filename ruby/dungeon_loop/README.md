@@ -4,10 +4,14 @@ Dungeon Loop Game
 
 ## To-Do List
 
-- [ ]
-- [ ] State machine implementation
-- [ ] Player and Entity Classes
-- [ ] Core files setup
+- [ ] Game over state
+- [ ] Shop state
+- [ ] Menu state
+- [ ] Zombie Class
+- [ ] Enemy Class
+- [x] State machine implementation
+- [x] Player and Entity Classes
+- [x] Core files setup
 - [x] set up basic structure following this outline:
 
 ```
@@ -25,10 +29,10 @@ dungeon_loop/
 │ ├── entities/
 │ │ ├── entity.rb # Base entity class
 │ │ ├── player.rb # Player with lives system
-│ │ └── enemies/
-│ │ ├── enemy.rb # Base enemy class
-│ │ ├── zombie.rb # Basic enemy
-│ │ └── monster.rb # Ranged enemy
+│ | └── enemies/      <-- This subdirectory
+│ |     ├── enemy.rb  <-- Base enemy class
+│ |     ├── zombie.rb <-- Specific enemy implementation
+│ |     └── monster.rb
 │ ├── weapons/
 │ │ ├── weapon.rb # Base weapon class
 │ │ ├── fireball.rb # Basic weapon
