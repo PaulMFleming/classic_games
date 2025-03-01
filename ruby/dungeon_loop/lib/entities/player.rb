@@ -10,7 +10,7 @@ class Player < Entity
     @lives = Constants::PLAYER_START_LIVES
     @score = 0
     @xp = 0
-    @speed
+    @speed = Constants::PLAYER_SPEED
     @weapon = nil
   end
 
