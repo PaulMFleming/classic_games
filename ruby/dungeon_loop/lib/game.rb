@@ -33,7 +33,8 @@ class Game < Gosu::Window
       lives: Constants::PLAYER_START_LIVES,
       score: 0,
       xp: 0,
-      upgrades: {}
+      upgrades: {},
+      new_game: true
     }
     puts "DEBUG: Entering initial state..."
     @current_state.enter

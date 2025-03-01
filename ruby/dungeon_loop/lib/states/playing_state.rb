@@ -5,7 +5,8 @@ require_relative '../entities/enemies/zombie'
 class PlayingState < State
   def enter
     # Load or create player
-    if @game.player_data[:new_game]
+    if @game.player_data[:new_game] == false
+      # Load existing player data
       @player = Player.new(@game.width/2, @game.height/2)
       @player.lives = @game.player_data[:lives]
       @player.score = @game.player_data[:score]
