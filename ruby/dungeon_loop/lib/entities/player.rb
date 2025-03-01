@@ -2,21 +2,24 @@ require_relative 'entity'
 require_relative '../constants'
 
 class Player < Entity
-  attr_accessor :lives, :score, :xp, :health
+  attr_accessor :lives, :score, :xp, :health, :max_health, :speed, :weapons
 
   def initialize(x, y)
     super(x, y, Constants::PLAYER_IMAGE)
     @health = Constants::PLAYER_START_HEALTH
+    @max_health = Constants::PLAYER_MAX_HEALTH
     @lives = Constants::PLAYER_START_LIVES
     @score = 0
     @xp = 0
     @speed = Constants::PLAYER_SPEED
-    @weapon = nil
+    @weapons = []
+
+    equip_weapon(FireballWeapon.new)
   end
 
   def update
     handle_movement
-    handle_attack if @weapon
+    fire_weapons
   end
 
   def draw
@@ -35,7 +38,20 @@ class Player < Entity
   end
 
   def equip_weapon(weapon)
-    @weapon = weapon
+    return false if @weapons.length >= 4
+    @weapons << weapon
+    true
+  end
+
+  def fire_weapons
+    fired_projectiles = []
+
+    @weapons.each do |weapon|
+      projectile = weapon.fire(@x, @y)
+      fired_projectiles << projectile if projectile
+    end
+
+    fired_projectiles
   end
 
   private
