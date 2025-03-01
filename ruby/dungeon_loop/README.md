@@ -6,9 +6,9 @@ Dungeon Loop Game
 
 - [ ] Game over state
 - [ ] Shop state
-- [ ] Menu state
-- [ ] Zombie Class
-- [ ] Enemy Class
+- [x] Menu state
+- [x] Zombie Class
+- [x] Enemy Class
 - [x] State machine implementation
 - [x] Player and Entity Classes
 - [x] Core files setup
