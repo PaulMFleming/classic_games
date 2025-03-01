@@ -36,7 +36,7 @@ class PlayingState < State
     @player.update
     
     # Spawn enemies periodically
-    if Gosu.milliseconds - @last_enemy_spawn > 2000 # Every 2 seconds
+    if Gosu.milliseconds - @last_enemy_spawn > Constants::ENEMY_SPAWN_RATE * 1000
       spawn_enemy
       @last_enemy_spawn = Gosu.milliseconds
     end
@@ -48,6 +48,12 @@ class PlayingState < State
     # Check if player died
     if @player.health <= 0
       @player.lose_life
+      puts "DEBUG: Player died! Lives remaining: #{@player.lives}"
+
+      @game.player_data[:lives] = @player.lives
+      @game.player_data[:score] = @player.score
+      @game.player_data[:xp] = @player.xp
+
       if @player.lives > 0
         @game.change_state(Constants::STATE_NAMES[:shop])
       else
