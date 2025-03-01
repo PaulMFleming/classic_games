@@ -104,14 +104,15 @@ class PlayingState < State
   end
   
   def draw_hud
+    @hud_font ||= Gosu::Font.new(20)
     # Draw score
-    Gosu.draw_text("Score: #{@player.score}", 10, 10, 10, 1, 1, Constants::COLORS[:white])
+    @hud_font.draw_text("Score: #{@player.score}", 10, 10, 10, 1, 1, Constants::COLORS[:white])
     
     # Draw lives
-    Gosu.draw_text("Lives: #{@player.lives}", 10, 30, 10, 1, 1, Constants::COLORS[:white])
+    @hud_font.draw_text("Lives: #{@player.lives}", 10, 30, 10, 1, 1, Constants::COLORS[:white])
     
     # Draw XP
-    Gosu.draw_text("XP: #{@player.xp}", 10, 50, 10, 1, 1, Constants::COLORS[:gold])
+    @hud_font.draw_text("XP: #{@player.xp}", 10, 50, 10, 1, 1, Constants::COLORS[:gold])
   end
   
   def apply_upgrades
