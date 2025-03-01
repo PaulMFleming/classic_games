@@ -2,9 +2,16 @@
 
 Dungeon Loop Game
 
+## Bug List
+
+- [ ] Lives are not decreasing when new round starts
+
 ## To-Do List
 
-- [ ] fix any bugs from below tasks to get basic implementation running
+- [ ] add Zombie image
+- [ ] change player direction with movement
+- [ ] implement fireball weapon
+- [x] fix any bugs from below tasks to get basic implementation running
 - [x] Game over state
 - [x] Shop state
 - [x] Menu state
