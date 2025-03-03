@@ -34,20 +34,22 @@ class PlayingState < State
   end
   
   def update
-    @player.update
-
     new_projectiles = @player.fire_weapons
-    @projectiles.concat(new_projectiles) unless new_projectiles.any?
+    puts "DEBUG: New projectiles created: #{new_projectiles.length}"
+    @projectiles.concat(new_projectiles) if new_projectiles.any?
+
+    @player.update
+    @enemies.each(&:update)
+    @projectiles.each(&:update)
+
+    handle_collisions
     
     # Spawn enemies periodically
     if Gosu.milliseconds - @last_enemy_spawn > Constants::ENEMY_SPAWN_RATE * 1000
       spawn_enemy
       @last_enemy_spawn = Gosu.milliseconds
     end
-    
-    @enemies.each(&:update)
-    @projectiles.each(&:update)
-    handle_collisions
+  
     
     # Check if player died
     if @player.health <= 0

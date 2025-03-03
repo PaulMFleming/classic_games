@@ -1,5 +1,5 @@
 require_relative 'weapon'
-require_relative '../projectiles/fireball_projectile'
+require_relative 'projectiles/fireball_projectile'
 
 class FireballWeapon < Weapon
   def initialize(direction = Weapon::RIGHT)
@@ -8,6 +8,7 @@ class FireballWeapon < Weapon
   end
   
   def create_projectile(x, y)
+    puts "DEBUG: Creating FireballProjectile at (#{x}, #{y})"
     FireballProjectile.new(x, y, @direction, @damage, @projectile_speed)
   end
   

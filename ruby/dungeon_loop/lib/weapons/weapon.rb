@@ -8,10 +8,11 @@ class Weapon
   LEFT = :left
   RIGHT = :right
 
-  def initialize(name, damage, fire_rate, projectile_speed)
+  def initialize(name, damage, fire_rate, direction, projectile_speed)
     @name = name
     @damage = damage
     @fire_rate = fire_rate
+    @direction = direction
     @projectile_speed = projectile_speed
     @last_fire_time = 0
   end
@@ -23,6 +24,7 @@ class Weapon
   def fire(x, y)
     return nil unless can_fire?
 
+    puts "DEBUG: Firing #{@name} in direction #{@direction}"
     @last_fire_time = Gosu.milliseconds
     create_projectile(x, y)
   end

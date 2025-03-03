@@ -1,5 +1,9 @@
 require_relative 'entity'
 require_relative '../constants'
+require_relative '../weapons/projectiles/fireball_projectile'
+require_relative '../weapons/projectiles/projectile'
+require_relative '../weapons/weapon'
+require_relative '../weapons/fireball'
 
 class Player < Entity
   attr_accessor :lives, :score, :xp, :health, :max_health, :speed, :weapons
@@ -45,12 +49,19 @@ class Player < Entity
 
   def fire_weapons
     fired_projectiles = []
-
+    
     @weapons.each do |weapon|
       projectile = weapon.fire(@x, @y)
-      fired_projectiles << projectile if projectile
+      if projectile
+        puts "DEBUG: Adding projectile to fired_projectiles array: #{projectile.inspect}"
+        fired_projectiles << projectile 
+      end
     end
-
+    
+    # Add this debug to see if projectiles are being returned
+    puts "DEBUG: Returning #{fired_projectiles.length} projectiles from fire_weapons"
+    
+    # Return the array of fired projectiles
     fired_projectiles
   end
 
