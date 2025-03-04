@@ -42,4 +42,8 @@ class Weapon
   def to_s
     "#{@name} (#{@direction})"
   end
+
+  def update_direction(new_direction)
+    @direction = new_direction
+  end
 end

@@ -6,7 +6,7 @@ require_relative '../weapons/weapon'
 require_relative '../weapons/fireball'
 
 class Player < Entity
-  attr_accessor :lives, :score, :xp, :health, :max_health, :speed, :weapons
+  attr_accessor :lives, :score, :xp, :health, :max_health, :speed, :weapons, :direction
 
   def initialize(x, y)
     super(x, y, Constants::PLAYER_IMAGE)
@@ -17,8 +17,11 @@ class Player < Entity
     @xp = 0
     @speed = Constants::PLAYER_SPEED
     @weapons = []
+    @direction = Weapon::RIGHT
+    @facing_left = false
+    @original_image = @image
 
-    equip_weapon(FireballWeapon.new)
+    equip_weapon(FireballWeapon.new(@direction))
   end
 
   def update
@@ -27,13 +30,18 @@ class Player < Entity
   end
 
   def draw
-    super
+    if @facing_left
+      @image.draw(@x, @y, 0, -1, 1)
+    else
+      @image.draw(@x, @y, 1)
+    end
+    # Draw health bar
     Gosu.draw_rect(@x, @y - 10, @width * @health / Constants::PLAYER_START_HEALTH, 5, Constants::COLORS[:green])
   end
 
   def take_damage(amount)
     @health -= amount
-    @heallt = [0, @health].max
+    @health = [0, @health].max
   end
 
   def lose_life
@@ -51,6 +59,10 @@ class Player < Entity
     fired_projectiles = []
     
     @weapons.each do |weapon|
+      if weapon.direction != @direction
+        weapon.update_direction(@direction)
+      end
+
       projectile = weapon.fire(@x, @y)
       if projectile
         puts "DEBUG: Adding projectile to fired_projectiles array: #{projectile.inspect}"
@@ -68,9 +80,29 @@ class Player < Entity
   private
 
   def handle_movement
-    @x -= @speed if Gosu.button_down?(Gosu::KB_LEFT) && @x > 0
-    @x += @speed if Gosu.button_down?(Gosu::KB_RIGHT) && @x < Constants::SCREEN_WIDTH - @width
-    @y -= @speed if Gosu.button_down?(Gosu::KB_UP) && @y > 0
-    @y += @speed if Gosu.button_down?(Gosu::KB_DOWN) && @y < Constants::SCREEN_HEIGHT - @height
+    moved = false
+    old_direction = @direction
+
+
+    if Gosu.button_down?(Gosu::KB_LEFT) && @x > 0
+      @x -= @speed
+      @direction = Weapon::LEFT
+      @facing_left = true
+      moved = true
+    end
+    if Gosu.button_down?(Gosu::KB_RIGHT) && @x < Constants::SCREEN_WIDTH - @width
+      @x += @speed
+      @direction = Weapon::RIGHT
+      @facing_left = false
+      moved = true
+    end
+    if Gosu.button_down?(Gosu::KB_UP) && @y > 0
+      @y -= @speed 
+      moved = true
+    end
+    if Gosu.button_down?(Gosu::KB_DOWN) && @y < Constants::SCREEN_HEIGHT - @height
+      @y += @speed
+      moved = true
+    end
   end
 end
