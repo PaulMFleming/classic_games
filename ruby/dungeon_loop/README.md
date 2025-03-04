@@ -9,8 +9,8 @@ Dungeon Loop Game
 ## To-Do List
 
 - [ ] add Zombie image
-- [ ] change player direction with movement
-- [ ] fix bugs introduced by weapons
+- [x] change player direction with movement
+- [x] fix bugs introduced by weapons
 - [x] implement fireball weapon
 - [x] add projectile class
 - [x] add weapon class
