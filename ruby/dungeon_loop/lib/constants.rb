@@ -13,6 +13,8 @@ module Constants
 
   ZOMBIE_IMAGE = 'assets/images/zombie.png'
 
+  FIREBALL_IMAGE = 'assets/images/fireball.png'
+
   ENEMY_SPAWN_RATE = 2
 
   STATE_NAMES = {

@@ -21,10 +21,12 @@ Dungeon Loop Game
 - [ ] power ups only last for a few seconds
 - [ ] add background
 - [ ] implement camera
+- [ ] fix the fireball image
+- [ ] fix the player turning left bug (no longer centred under health bar)
 - [ ] remove health from the shop
 - [ ] add monsters images
 - [ ] add monsters to the game
-- [ ] add fireball image
+- [x] add fireball image
 - [x] add Zombie image
 - [x] change player direction with movement
 - [x] fix bugs introduced by weapons

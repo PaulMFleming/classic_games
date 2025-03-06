@@ -8,13 +8,17 @@ class Weapon
   LEFT = :left
   RIGHT = :right
 
-  def initialize(name, damage, fire_rate, direction, projectile_speed)
+  def initialize(name, damage, fire_rate, direction, projectile_speed, image_path=nil)
     @name = name
     @damage = damage
     @fire_rate = fire_rate
     @direction = direction
     @projectile_speed = projectile_speed
     @last_fire_time = 0
+
+    @image = Gosu::Image.new(image_path) if image_path
+    @width = @image.width if @image
+    @height = @image.height if @image
   end
 
   def can_fire?

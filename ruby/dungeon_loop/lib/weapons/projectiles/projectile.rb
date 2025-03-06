@@ -1,7 +1,7 @@
 class Projectile
   attr_reader :x, :y, :damage, :width, :height
   
-  def initialize(x, y, direction, damage, speed)
+  def initialize(x, y, direction, damage, speed, image_path=nil)
     @x = x
     @y = y
     @direction = direction
@@ -10,6 +10,21 @@ class Projectile
     @width = 10
     @height = 10
     @hit = false
+
+    if image_path && !image_path.empty?
+      @image = Gosu::Image.new(image_path)
+      @width = @image.width
+      @height = @image.height
+    end
+  end
+
+  def draw
+    if @image
+      @image.draw(@x, @y, 1)
+    else
+      # Default drawing if no image (for debugging)
+      Gosu.draw_rect(@x, @y, @width, @height, Gosu::Color::WHITE)
+    end
   end
   
   def update

@@ -2,7 +2,7 @@ require_relative 'weapon'
 require_relative 'projectiles/fireball_projectile'
 
 class FireballWeapon < Weapon
-  def initialize(direction = Weapon::RIGHT)
+  def initialize(direction = Weapon::RIGHT, image_path = nil)
     # name, damage, fire_rate (ms), direction, projectile_speed
     super("Fireball", 10, 1000, direction, 8)
   end
