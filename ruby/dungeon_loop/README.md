@@ -8,6 +8,7 @@ Dungeon Loop Game
 
 ## To-Do List
 
+- [ ] add tests
 - [ ] add monsters ranged attack
 - [ ] add animation on zombie death
 - [ ] add animation on zombie pushback
