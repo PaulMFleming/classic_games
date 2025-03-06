@@ -8,7 +8,24 @@ Dungeon Loop Game
 
 ## To-Do List
 
-- [ ] add Zombie image
+- [ ] add monsters ranged attack
+- [ ] add animation on zombie death
+- [ ] add animation on zombie pushback
+- [ ] add pushback to zombies upon collision with player
+- [ ] add mine to the shop
+- [ ] add bomb to the shop
+- [ ] add ice blast weapon to the shop
+- [ ] add extra life to the shop
+- [ ] add speed power up
+- [ ] add health power up
+- [ ] power ups only last for a few seconds
+- [ ] add background
+- [ ] implement camera
+- [ ] remove health from the shop
+- [ ] add monsters images
+- [ ] add monsters to the game
+- [ ] add fireball image
+- [x] add Zombie image
 - [x] change player direction with movement
 - [x] fix bugs introduced by weapons
 - [x] implement fireball weapon
