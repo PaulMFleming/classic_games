@@ -11,6 +11,8 @@ module Constants
   PLAYER_START_HEALTH = 100
   PLAYER_IMAGE = 'assets/images/player.png'
 
+  ZOMBIE_IMAGE = 'assets/images/zombie.png'
+
   ENEMY_SPAWN_RATE = 2
 
   STATE_NAMES = {

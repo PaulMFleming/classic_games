@@ -2,21 +2,23 @@ require_relative 'enemy'
 require_relative '../../constants'
 
 class Zombie < Enemy
+  attr_accessor :health, :speed, :damage
   def initialize(x, y, player)
-    super(x, y, player)
+    super(x, y, player,  Constants::ZOMBIE_IMAGE)
     @health = 20
     @speed = 1
     @damage = 5
-    
-    # Create a temporary colored rectangle as placeholder
-    @width = 30
-    @height = 30
-    @color = Gosu::Color::RED
+    @direction = :right
+    @facing_left = false
+    @original_image = @image
   end
   
   def draw
-    # Draw a colored rectangle as placeholder
-    Gosu.draw_rect(@x, @y, @width, @height, @color)
+    if @facing_left
+      @image.draw(@x, @y, 0, -1, 1)
+    else
+      @image.draw(@x, @y, 1)
+    end
     
     # Draw health bar
     Gosu.draw_rect(@x, @y - 10, @width * (@health.to_f / 20), 5, Gosu::Color::GREEN)

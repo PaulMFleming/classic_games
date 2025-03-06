@@ -3,8 +3,8 @@ require_relative '../entity'
 class Enemy < Entity
   attr_reader :damage, :health
   
-  def initialize(x, y, player)
-    super(x, y)
+  def initialize(x, y, player, image_path=nil)
+    super(x, y, image_path)
     @player = player
     @health = 10
     @speed = 1
