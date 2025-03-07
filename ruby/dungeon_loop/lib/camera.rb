@@ -35,3 +35,5 @@ class Camera
     else
       [0, 0]
     end
+  end
+end
