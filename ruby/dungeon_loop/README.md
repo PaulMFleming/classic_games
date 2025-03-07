@@ -12,7 +12,6 @@ Dungeon Loop Game
 - [ ] add monsters ranged attack
 - [ ] add animation on zombie death
 - [ ] add animation on zombie pushback
-- [ ] add pushback to zombies upon collision with player
 - [ ] add mine to the shop
 - [ ] add bomb to the shop
 - [ ] add ice blast weapon to the shop
@@ -20,13 +19,15 @@ Dungeon Loop Game
 - [ ] add speed power up
 - [ ] add health power up
 - [ ] power ups only last for a few seconds
-- [ ] add background
-- [ ] implement camera
 - [ ] fix the fireball image
 - [ ] fix the player turning left bug (no longer centred under health bar)
 - [ ] remove health from the shop
 - [ ] add monsters images
 - [ ] add monsters to the game
+- [ ] add pushback to zombies upon collision with player
+- [ ] fix zombie spawning - they should spawn from random places, not the same place
+- [ ] add background
+- [ ] implement camera
 - [x] add fireball image
 - [x] add Zombie image
 - [x] change player direction with movement
