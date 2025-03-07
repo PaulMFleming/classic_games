@@ -5,6 +5,8 @@ Dungeon Loop Game
 ## Bug List
 
 - [x] Lives are not decreasing when new round starts
+- [ ] Camera has caused health bars to be shown under XP and not above entitites
+- [ ] Camera starts allowing movement up and left only, it gets stuck when going right at a certain point
 
 ## To-Do List
 
@@ -26,8 +28,9 @@ Dungeon Loop Game
 - [ ] add monsters to the game
 - [ ] add pushback to zombies upon collision with player
 - [ ] fix zombie spawning - they should spawn from random places, not the same place
-- [ ] add background
-- [ ] implement camera
+- [ ] fix camera bugs
+- [x] add background
+- [x] implement camera
 - [x] add fireball image
 - [x] add Zombie image
 - [x] change player direction with movement

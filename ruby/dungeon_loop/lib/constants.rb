@@ -17,6 +17,9 @@ module Constants
   ZOMBIE_IMAGE = 'assets/images/zombie.png'
 
   FIREBALL_IMAGE = 'assets/images/fireball.png'
+  BACKGROUND_IMAGE = 'assets/images/background.png'
+
+  TILE_SIZE = 250
 
   ENEMY_SPAWN_RATE = 2
 

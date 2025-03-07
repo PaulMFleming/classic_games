@@ -2,6 +2,7 @@ require_relative 'state'
 require_relative '../entities/player'
 require_relative '../entities/enemies/zombie'
 require_relative '../camera'
+require_relative '../background'
 
 class PlayingState < State
   def initialize(game)
@@ -31,6 +32,8 @@ class PlayingState < State
       @game.player_data[:new_game] = false
     end
     
+    @background = Background.new
+
     @enemies = []
     @projectiles = []
     @last_enemy_spawn = Gosu.milliseconds
@@ -89,6 +92,9 @@ class PlayingState < State
     # Clear screen
     Gosu.draw_rect(0, 0, Constants::SCREEN_WIDTH, Constants::SCREEN_HEIGHT, Constants::COLORS[:black])
     
+    # Draw the background
+    @background.draw(@camera)
+
     # Use the draw_entity helper method to draw entities with camera transformation
     draw_entity(@player)
     @enemies.each { |enemy| draw_entity(enemy) }
