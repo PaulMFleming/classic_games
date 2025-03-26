@@ -12,16 +12,40 @@ class Camera
 
   def update(target)
     # Center camera on target (player)
-    @x = -target.x + Constants::SCREEN_WIDTH / 2
-    @y = -target.y + Constants::SCREEN_HEIGHT / 2
+    target_x = target.x
+    target_y = target.y
 
-    # Limit scrolling to the bounds of the map
-    @x = [0, @x].min
-    @y = [0, @y].min
+    # Move to camera to center of target
+    desired_x = -target_x + Constants::SCREEN_WIDTH / 2
+    desired_y = -target_y + Constants::SCREEN_HEIGHT / 2
 
-    # Prevent camera from going out of bounds
-    @x = [-(width - Constants::SCREEN_WIDTH), @x].max
-    @y = [-(height - Constants::SCREEN_HEIGHT), @y].max
+    
+    # Apply boundary limits with more explicit logic
+    # Don't let camera go beyond left edge of game world
+    @x = if desired_x > 0  
+      0
+    # Don't let camera go beyond right edge of game world  
+    elsif desired_x < -(width - Constants::SCREEN_WIDTH)
+      -(width - Constants::SCREEN_WIDTH)
+    # Within bounds, use the desired position
+    else
+      desired_x
+    end
+
+    # Same logic for Y axis
+    @y = if desired_y > 0
+          0
+        elsif desired_y < -(height - Constants::SCREEN_HEIGHT)
+          -(height - Constants::SCREEN_HEIGHT)
+        else
+          desired_y
+        end
+
+    # Print debug info occasionally
+    if rand < 0.1
+    puts "DEBUG: Camera position: (#{@x}, #{@y}), Player position: (#{target_x}, #{target_y})" 
+    puts "DEBUG: Map size: #{width}x#{height}, Screen size: #{Constants::SCREEN_WIDTH}x#{Constants::SCREEN_HEIGHT}"
+    end
   end
 
   def world_to_screen(x, y)

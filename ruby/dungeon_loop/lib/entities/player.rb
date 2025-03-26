@@ -36,7 +36,7 @@ class Player < Entity
       @image.draw(@x, @y, 1)
     end
     # Draw health bar
-    Gosu.draw_rect(@x, @y - 10, @width * @health / Constants::PLAYER_START_HEALTH, 5, Constants::COLORS[:green])
+    Gosu.draw_rect(@x, @y - 10, @width * @health / @max_health, 5, Constants::COLORS[:green])
   end
 
   def take_damage(amount)
@@ -46,7 +46,7 @@ class Player < Entity
 
   def lose_life
     @lives -= 1
-    @health = Constants::PLAYER_START_HEALTH
+    @health = @max_health
   end
 
   def equip_weapon(weapon)
@@ -71,7 +71,7 @@ class Player < Entity
     end
     
     # Add this debug to see if projectiles are being returned
-    puts "DEBUG: Returning #{fired_projectiles.length} projectiles from fire_weapons"
+    #puts "DEBUG: Returning #{fired_projectiles.length} projectiles from fire_weapons"
     
     # Return the array of fired projectiles
     fired_projectiles
@@ -90,7 +90,7 @@ class Player < Entity
       @facing_left = true
       moved = true
     end
-    if Gosu.button_down?(Gosu::KB_RIGHT) && @x < Constants::SCREEN_WIDTH - @width
+    if Gosu.button_down?(Gosu::KB_RIGHT) && @x < Constants::MAP_WIDTH - @width
       @x += @speed
       @direction = Weapon::RIGHT
       @facing_left = false
@@ -100,7 +100,7 @@ class Player < Entity
       @y -= @speed 
       moved = true
     end
-    if Gosu.button_down?(Gosu::KB_DOWN) && @y < Constants::SCREEN_HEIGHT - @height
+    if Gosu.button_down?(Gosu::KB_DOWN) && @y < Constants::MAP_HEIGHT - @height
       @y += @speed
       moved = true
     end
