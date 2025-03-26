@@ -1,5 +1,5 @@
 class Projectile
-  attr_reader :x, :y, :damage, :width, :height
+  attr_reader :x, :y, :damage, :width, :height, :image
   
   def initialize(x, y, direction, damage, speed, image_path=nil)
     @x = x
@@ -26,6 +26,14 @@ class Projectile
       Gosu.draw_rect(@x, @y, @width, @height, Gosu::Color::WHITE)
     end
   end
+
+  def draw_at(screen_x, screen_y)
+    if @image
+      @image.draw(screen_x, screen_y)
+    else
+      Gosu.draw_rect(screen_x, screen_y, @width, @height, Gosu::Color::YELLOW)
+    end
+  end
   
   def update
     case @direction
@@ -40,8 +48,8 @@ class Projectile
     end
     
     # Check if out of bounds
-    if @x < 0 || @x > Constants::SCREEN_WIDTH || 
-       @y < 0 || @y > Constants::SCREEN_HEIGHT
+    if @x < 0 || @x > Constants::MAP_WIDTH || 
+       @y < 0 || @y > Constants::MAP_HEIGHT
       @hit = true
     end
   end
