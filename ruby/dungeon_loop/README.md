@@ -5,8 +5,14 @@ Dungeon Loop Game
 ## Bug List
 
 - [x] Lives are not decreasing when new round starts
+- [x] fix fireball bug (only firing in top left section of map)
+- [x] fix camera bugs
+- [x] Camera starts allowing movement up and left only, it gets stuck when going right at a certain point
+- [ ] fix zombie spawning - they should spawn from random places, not the same place
+- [ ] fix the health bar not being above player anymore
+- [ ] fix the fireball image
+- [ ] fix the player turning left bug (no longer centred under health bar)
 - [ ] Camera has caused health bars to be shown under XP and not above entitites
-- [ ] Camera starts allowing movement up and left only, it gets stuck when going right at a certain point
 
 ## To-Do List
 
@@ -21,16 +27,10 @@ Dungeon Loop Game
 - [ ] add speed power up
 - [ ] add health power up
 - [ ] power ups only last for a few seconds
-- [ ] fix the fireball image
-- [ ] fix the player turning left bug (no longer centred under health bar)
 - [ ] remove health from the shop
 - [ ] add monsters images
 - [ ] add monsters to the game
 - [ ] add pushback to zombies upon collision with player
-- [ ] fix zombie spawning - they should spawn from random places, not the same place
-- [ ] fix the health bar not being above player anymore
-- [x] fix fireball bug (only firing in top left section of map)
-- [x] fix camera bugs
 - [x] add background
 - [x] implement camera
 - [x] add fireball image
