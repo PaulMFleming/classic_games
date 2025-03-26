@@ -28,7 +28,8 @@ Dungeon Loop Game
 - [ ] add monsters to the game
 - [ ] add pushback to zombies upon collision with player
 - [ ] fix zombie spawning - they should spawn from random places, not the same place
-- [ ] fix fireball bug (only firing in top left section of map)
+- [ ] fix the health bar not being above player anymore
+- [x] fix fireball bug (only firing in top left section of map)
 - [x] fix camera bugs
 - [x] add background
 - [x] implement camera
